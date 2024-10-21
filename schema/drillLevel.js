@@ -31,7 +31,8 @@ module.exports = (sequelize) => {
       type: DataTypes.JSON,
     },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('Completed', 'inProgress', 'Blocked'),
+      defaultValue: 'Blocked',
     },
     score: {
       type: DataTypes.FLOAT,

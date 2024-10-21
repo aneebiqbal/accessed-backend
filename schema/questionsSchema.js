@@ -7,6 +7,10 @@ module.exports = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
+    questionType: {
+        type: DataTypes.ENUM('image', 'passage', 'MCQs'),
+        allowNull: false,
+      },
     passage: {
       type: DataTypes.TEXT,
     },
