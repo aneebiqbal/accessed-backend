@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
     },
     levels: {
-      type: DataTypes.JSON,
+      type: DataTypes.INTEGER,
     },
     status: {
       type: DataTypes.ENUM('Completed', 'inProgress', 'Blocked'),
