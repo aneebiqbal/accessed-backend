@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { User } = require("../../db/db");
+const { Student: User } = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
 
 exports.changePassword = async (req, res) => {
@@ -43,7 +43,7 @@ exports.changePassword = async (req, res) => {
         id: user.id,
         username: user.userName,
         email: user.email,
-        imgUrl: user.imgUrl
+        // imgUrl: user.imgUrl
       };
       // Respond with the new token and a success message
       res.status(200).json({ result, message: "Password changed successfully" });

@@ -9,12 +9,12 @@ const { deleteUser } = require("../controllers/auth/deleteUser");
 
 //register new user
 router.post("/register", register);
-router.post("/ExternalSourceSignUp", externalSourceSignUp);
+// router.post("/ExternalSourceSignUp", externalSourceSignUp);
 
 
 //login user
 router.post("/login", login)
-router.post("/ExternalSourceLogin", signInExternalSource)
+// router.post("/ExternalSourceLogin", signInExternalSource)
 
 
 //updateUser
