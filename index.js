@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
 const authRoutes = require('./routes/auth');
+const appRoutes = require('./routes/app');
+
 
 
 const app = express();
@@ -13,6 +15,7 @@ app.use(cors());
 // app.set('trust proxy', 1); 
 
 app.use('/auth', authRoutes);
+app.use('/app', appRoutes);
 
 
 const port = process.env.PORT || 3000;
