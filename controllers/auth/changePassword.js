@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Student: User } = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
+const { passwordSchema } = require("../../validations/studentValidation");
+const { createErrorResponse } = require("./registerController");
 
 exports.changePassword = async (req, res) => {
   try {
@@ -9,6 +11,17 @@ exports.changePassword = async (req, res) => {
     authMiddleware(req, res, async () => {
       const { oldPassword, newPassword, confirmPassword } = req.body;
       const userId = req.user.id;
+
+      const password = newPassword
+
+      const { error } = passwordSchema.validate({password}, {
+        aboutEarly: false,
+      });
+      if (error) {
+        return res
+          .status(400)
+          .json(createErrorResponse(error.details));
+      }
 
       if (newPassword !== confirmPassword) {
         return res.status(400).json({ error: "New Passwords do not match" });
@@ -29,7 +42,7 @@ exports.changePassword = async (req, res) => {
       // Generate a new token with updated user information
       const token = jwt.sign(
         { id: user.id, email: user.email, username: user.userName },
-        "secret-key",
+        process.env.JWT_SECRET,
         {
           expiresIn: "7d",
         }

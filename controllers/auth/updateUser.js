@@ -1,27 +1,78 @@
-const { User } = require("../../db/db");
+const { Student: User, Test } = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
+const {
+  firstNameSchema,
+  lastNameSchema,
+  numberSchema,
+} = require("../../validations/studentValidation");
+const { createErrorResponse } = require("./registerController");
 
 exports.updateUser = async (req, res) => {
   try {
     authMiddleware(req, res, async () => {
       const userId = req.user.id;
-      const { userName, email, imageUrl } = req.body;
+      const {
+        first_name,
+        last_name,
+        test_id,
+        number,
+      } = req.body;
+
       const user = await User.findByPk(userId, {
         attributes: { exclude: ["password"] },
       });
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      if (userName) {
-        user.userName = userName;
+      if (first_name) {
+        const { error } = firstNameSchema.validate({first_name}, {
+          aboutEarly: false,
+        });
+        if (error) {
+          return res
+            .status(400)
+            .json(createErrorResponse(error.details));
+        }
+
+        user.first_name = first_name;
       }
 
-      if (email !== null && email !== undefined) {
-        user.email = email;
+      if (last_name) {
+        const { error } = lastNameSchema.validate({last_name}, {
+          aboutEarly: false,
+        });
+        if (error) {
+          return res
+            .status(400)
+            .json(createErrorResponse(error.details));
+        }
+
+        user.last_name = last_name;
       }
 
-      if (imageUrl) {
-        user.imgUrl = imageUrl;
+      if (test_id) {
+        // Check if test_id exists in the Tests table
+        const testExists = await Test.findByPk(test_id);
+        if (!testExists) {
+          return res
+            .status(400)
+            .json({ message: "Invalid test_id: Test not found" });
+        }
+
+        user.test_id = test_id;
+      }
+
+      if (number) {
+        const { error } = numberSchema.validate({number}, {
+          aboutEarly: false,
+        });
+        if (error) {
+          return res
+            .status(400)
+            .json(createErrorResponse(error.details));
+        }
+
+        user.number = number;
       }
       await user.save();
       const updatedUser = await User.findByPk(userId, {

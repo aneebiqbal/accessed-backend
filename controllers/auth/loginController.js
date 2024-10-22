@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       { id: user.id, email: user.email },
-      "secret-key",
+      process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
@@ -42,44 +42,3 @@ exports.login = async (req, res) => {
     res.status(500).json({ status: "error", error: "Authentication failed" });
   }
 };
-
-
-
-
-// exports.signInExternalSource = async (req, res) => {
-//   try {
-//     const { externalSourceTypeId, uuid } = req.body;
-//     if (!uuid) {
-//       return res.status(400).json({ status: "error", error: "UUID is required" });
-//     }
-//     const user = await User.findOne({
-//       where: { UUID: uuid, externalSourceTypeId: externalSourceTypeId }
-//     });
-   
-
-//     if (!user) {
-//       return res.status(400).json({ status: "error", error: "User not found" });
-//     }
-
-//     const token = jwt.sign(
-//       { id: user.id, email: user.email, UUID: user.uuid },
-//       "secret-key",
-//       {
-//         expiresIn: "7d",
-//       }
-//     );
-
-//     const result = {
-//       token: token,
-//       id: user.id,
-//       username: user.userName,
-//       email: user.email,
-//       imgUrl: user.imgUrl
-//     };
-
-//     res.status(200).json({ result });
-//   } catch (error) {
-//     console.error("Error during authentication:", error);
-//     res.status(500).json({ status: "error", error: "Authentication failed" });
-//   }
-// };
