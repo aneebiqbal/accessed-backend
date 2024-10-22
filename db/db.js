@@ -27,7 +27,7 @@ const sequelize = new Sequelize({
 
 });
 
-const User = UserModel(sequelize);
+// const User = UserModel(sequelize);
 const Student = studentSchema(sequelize);
 const Drill = drillSchema(sequelize);
 const DrillStatus = drillStatus(sequelize);
@@ -52,7 +52,7 @@ sequelize.sync();
 //   });
 
 module.exports = {
-  User,
+  // User,
   Drill,
   DrillStatus,
   DrillLevel,
