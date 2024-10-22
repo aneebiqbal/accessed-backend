@@ -8,10 +8,10 @@ const questionStatusSchema = require('../schema/questionStatusSchema');
 const studentSchema = require('../schema/studentSchema');
 const testSchema = require('../schema/testSchema');
 const testTopicsSchema = require('../schema/testTopicsSchema');
-const topicsSchema = require('../schema/topicsSchema');
+const topicsSchema = require('../schema/topicSchema');
 
 
-const sequelize = new Sequelize({
+ const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,

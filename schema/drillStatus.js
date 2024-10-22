@@ -22,8 +22,9 @@ module.exports = (sequelize) => {
       },
     },
     status: {
-      type: DataTypes.STRING,
-    },
+        type: DataTypes.ENUM('Completed', 'inProgress', 'Blocked'),
+        defaultValue: 'Blocked',
+      },
   });
 
   return DrillStatus;
