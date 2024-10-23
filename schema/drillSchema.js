@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
     Drill.belongsTo(models.Topic, { foreignKey: 'topic_id' });
     Drill.hasMany(models.DrillLevel, { foreignKey: 'drill_id' });
     Drill.hasMany(models.Question, { foreignKey: 'drill_id' });
-    Drill.hasMany(models.DrillStatuses, { foreignKey: 'drill_id' });
+    Drill.hasMany(models.DrillStatus, { foreignKey: 'drill_id' });
   };
 
   return Drill;
