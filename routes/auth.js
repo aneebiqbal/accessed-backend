@@ -5,23 +5,28 @@ const { login, signInExternalSource } = require("../controllers/auth/loginContro
 const { changePassword } = require("../controllers/auth/changePassword");
 const { updateUser } = require("../controllers/auth/updateUser");
 const { deleteUser } = require("../controllers/auth/deleteUser");
+const { forgotPassword } = require("../controllers/auth/forgetPassword");
+const { resetPassword } = require("../controllers/auth/resetPassword");
 
 
 //register new user
 router.post("/register", register);
-// router.post("/ExternalSourceSignUp", externalSourceSignUp);
 
 
 //login user
 router.post("/login", login)
-// router.post("/ExternalSourceLogin", signInExternalSource)
-
 
 //updateUser
 router.post("/updateUser", updateUser)
 
 //changePassword
 router.patch("/changePassword", changePassword)
+
+//forgotPassword
+router.post("/forgotPassword", forgotPassword)
+
+//resetPassword
+router.patch("/resetPassword", resetPassword)
 
 //DeleteUser
 router.delete("/deleteUser", deleteUser)
