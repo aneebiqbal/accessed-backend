@@ -24,6 +24,11 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
     },
   });
+  
+  Test.associate = (models) => {
+    Test.hasMany(models.Student, { foreignKey: 'test_id', as: 'Student' });
+    Test.hasMany(models.TestTopic, { foreignKey: 'test_id', as: 'testTopic' });
+  };
 
   return Test;
 };

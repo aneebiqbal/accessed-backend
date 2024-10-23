@@ -5,8 +5,6 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const appRoutes = require('./routes/app');
 
-
-
 const app = express();
 app.use(express.json({ limit: "80mb" })); 
 
@@ -23,4 +21,4 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-module.exports = app
+module.exports = app;

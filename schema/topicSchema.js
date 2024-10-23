@@ -16,5 +16,10 @@ module.exports = (sequelize) => {
     },
   });
 
+  Topic.associate = (models) => {
+    Topic.hasMany(models.Drill, { foreignKey: 'topic_id' });
+    Topic.hasMany(models.TestTopic, { foreignKey: 'topic_id', as: 'testTopics' });
+  };
+
   return Topic;
 };

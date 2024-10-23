@@ -27,5 +27,9 @@ module.exports = (sequelize) => {
       },
   });
 
+  DrillStatus.associate = (models) => {
+    DrillStatus.belongsTo(models.Drill, { foreignKey: 'drill_id' });
+    DrillStatus.belongsTo(models.Student, { foreignKey: 'student_id' });
+  };
   return DrillStatus;
 };
