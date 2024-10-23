@@ -1,11 +1,11 @@
-const { User } = require("../../db/db");
+const db = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
 
 exports.deleteUser = (req, res) => {
   try {
     authMiddleware(req, res, async () => {
       const userId = req.user.id;
-      const user = await User.findByPk(userId, {
+      const user = await db.User.findByPk(userId, {
         attributes: { exclude: ["password"] },
       });
       if (!user) {

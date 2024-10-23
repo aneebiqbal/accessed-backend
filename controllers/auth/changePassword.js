@@ -1,26 +1,28 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { Student: User } = require("../../db/db");
+const db = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
 const { passwordSchema } = require("../../validations/studentValidation");
 const { createErrorResponse } = require("./registerController");
 
 exports.changePassword = async (req, res) => {
   try {
-    // Use the authMiddleware to fetch the userID from the token
     authMiddleware(req, res, async () => {
       const { oldPassword, newPassword, confirmPassword } = req.body;
       const userId = req.user.id;
 
-      const password = newPassword
+      const password = newPassword;
 
-      const { error } = passwordSchema.validate({password}, {
-        aboutEarly: false,
-      });
+      const { error } = passwordSchema.validate(
+        { password },
+        {
+          aboutEarly: false,
+        }
+      );
       if (error) {
         return res
           .status(400)
-          .json(createErrorResponse(error.details));
+          .json(createErrorResponse(error.details[0].message));
       }
 
       if (newPassword !== confirmPassword) {
@@ -28,10 +30,12 @@ exports.changePassword = async (req, res) => {
       }
 
       if (newPassword == oldPassword) {
-        return res.status(400).json({ error: "New Password can not be same as old password" });
+        return res
+          .status(400)
+          .json({ error: "New Password can not be same as old password" });
       }
 
-      const user = await User.findByPk(userId);
+      const user = await db.Student.findByPk(userId);
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -43,7 +47,6 @@ exports.changePassword = async (req, res) => {
         return res.status(401).json({ error: "Old password is incorrect" });
       }
 
-      // Generate a new token with updated user information
       const token = jwt.sign(
         { id: user.id, email: user.email, username: user.userName },
         process.env.JWT_SECRET,
@@ -55,15 +58,17 @@ exports.changePassword = async (req, res) => {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       await user.update({ password: hashedPassword });
+
       const result = {
-        token: token,
-        id: user.id,
-        username: user.userName,
-        email: user.email,
-        // imgUrl: user.imgUrl
+        data: {
+          token: token,
+          id: user.id,
+          email: user.email,
+        },
+        status: 200,
+        message: "Password changed successfully",
       };
-      // Respond with the new token and a success message
-      res.status(200).json({ result, message: "Password changed successfully" });
+      res.status(200).json(result);
     });
   } catch (error) {
     console.error("Error while changing password:", error);
