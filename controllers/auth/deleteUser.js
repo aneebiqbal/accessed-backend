@@ -1,4 +1,4 @@
-const { db } = require("../../db/db");
+const db = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
 
 exports.deleteUser = (req, res) => {

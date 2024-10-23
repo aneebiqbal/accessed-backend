@@ -1,4 +1,4 @@
-const { db } = require("../../db/db");
+const db = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
 const {
   firstNameSchema,
@@ -11,12 +11,7 @@ exports.updateUser = async (req, res) => {
   try {
     authMiddleware(req, res, async () => {
       const userId = req.user.id;
-      const {
-        first_name,
-        last_name,
-        test_id,
-        number,
-      } = req.body;
+      const { first_name, last_name, test_id, number } = req.body;
 
       const user = await db.Student.findByPk(userId, {
         attributes: { exclude: ["password"] },
@@ -25,9 +20,12 @@ exports.updateUser = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
       if (first_name) {
-        const { error } = firstNameSchema.validate({first_name}, {
-          aboutEarly: false,
-        });
+        const { error } = firstNameSchema.validate(
+          { first_name },
+          {
+            aboutEarly: false,
+          }
+        );
         if (error) {
           return res
             .status(400)
@@ -38,9 +36,12 @@ exports.updateUser = async (req, res) => {
       }
 
       if (last_name) {
-        const { error } = lastNameSchema.validate({last_name}, {
-          aboutEarly: false,
-        });
+        const { error } = lastNameSchema.validate(
+          { last_name },
+          {
+            aboutEarly: false,
+          }
+        );
         if (error) {
           return res
             .status(400)
@@ -62,9 +63,12 @@ exports.updateUser = async (req, res) => {
       }
 
       if (number) {
-        const { error } = numberSchema.validate({number}, {
-          aboutEarly: false,
-        });
+        const { error } = numberSchema.validate(
+          { number },
+          {
+            aboutEarly: false,
+          }
+        );
         if (error) {
           return res
             .status(400)
@@ -77,9 +81,14 @@ exports.updateUser = async (req, res) => {
       const updatedUser = await db.Student.findByPk(userId, {
         attributes: { exclude: ["password"] },
       });
-      return res
-        .status(200)
-        .json({ message: "User updated successfully", updatedUser });
+
+      const result = {
+        data: updatedUser,
+        status: 200,
+        message: "User updated successfully",
+      };
+
+      return res.status(200).json(result);
     });
   } catch (error) {
     console.error("Error updating user:", error);

@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { db } = require("../../db/db");
+const db = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
 const { passwordSchema } = require("../../validations/studentValidation");
 const { createErrorResponse } = require("./registerController");
@@ -11,11 +11,14 @@ exports.changePassword = async (req, res) => {
       const { oldPassword, newPassword, confirmPassword } = req.body;
       const userId = req.user.id;
 
-      const password = newPassword
+      const password = newPassword;
 
-      const { error } = passwordSchema.validate({password}, {
-        aboutEarly: false,
-      });
+      const { error } = passwordSchema.validate(
+        { password },
+        {
+          aboutEarly: false,
+        }
+      );
       if (error) {
         return res
           .status(400)
@@ -27,7 +30,9 @@ exports.changePassword = async (req, res) => {
       }
 
       if (newPassword == oldPassword) {
-        return res.status(400).json({ error: "New Password can not be same as old password" });
+        return res
+          .status(400)
+          .json({ error: "New Password can not be same as old password" });
       }
 
       const user = await db.Student.findByPk(userId);
@@ -53,13 +58,17 @@ exports.changePassword = async (req, res) => {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       await user.update({ password: hashedPassword });
+
       const result = {
-        token: token,
-        id: user.id,
-        username: user.userName,
-        email: user.email,
+        data: {
+          token: token,
+          id: user.id,
+          email: user.email,
+        },
+        status: 200,
+        message: "Password changed successfully",
       };
-      res.status(200).json({ result, message: "Password changed successfully" });
+      res.status(200).json(result);
     });
   } catch (error) {
     console.error("Error while changing password:", error);
