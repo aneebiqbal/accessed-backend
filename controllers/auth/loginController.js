@@ -29,14 +29,16 @@ exports.login = async (req, res) => {
       }
     );
 
-    const result = {
+    res.status(200).json({
       token: token,
-      id: user.id,
+      username: user.userName,
       email: user.email,
-      // imgUrl: user.imgUrl
-    };
-
-    res.status(200).json({ result });
+      Id: user.id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      number: user.number,
+      test_id: user.test_id
+    })
   } catch (error) {
     console.error("Error during authentication:", error);
     res.status(500).json({ status: "error", error: "Authentication failed" });

@@ -27,6 +27,10 @@ exports.changePassword = async (req, res) => {
         return res.status(400).json({ error: "New Passwords do not match" });
       }
 
+      if (newPassword == oldPassword) {
+        return res.status(400).json({ error: "New Password can not be same as old password" });
+      }
+
       const user = await User.findByPk(userId);
 
       if (!user) {

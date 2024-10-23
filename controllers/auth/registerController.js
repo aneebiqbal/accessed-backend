@@ -25,17 +25,20 @@ exports.register = async (req, res) => {
         .status(400)
         .json(this.createErrorResponse(error.details));
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    const { first_name, last_name, password, number, test_id } = req.body;
+
+    const email = req.body.email.toLowerCase()
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const existingUser = await User.findOne({
-      where: { email: req.body.email },
+      where: { email: email },
     });
     if (existingUser) {
       return res
         .status(400)
         .json({ status: "error", error: "Email already exists" });
     }
-
-    const { first_name, last_name, email, number, test_id } = req.body;
 
     // Check if test_id exists in the Tests table
     const testExists = await Test.findByPk(test_id);
@@ -63,7 +66,10 @@ exports.register = async (req, res) => {
       username: newUser.userName,
       email: newUser.email,
       Id: newUser.id,
-      imgUrl: newUser.imgUrl,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      number: newUser.number,
+      test_id: newUser.test_id      
     });
   } catch (error) {
     console.error("Error registering user:", error);
