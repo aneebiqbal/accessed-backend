@@ -1,5 +1,4 @@
 const { Sequelize } = require('sequelize');
-const UserModel = require('../schema/userSchema');
 const drillSchema = require('../schema/drillSchema');
 const drillStatus = require('../schema/drillStatus');
 const drillLevel = require('../schema/drillLevel');
@@ -57,8 +56,8 @@ const db = {
 //   }
 // }
 
-// db.Student.associate(db);
-// db.Drill.associate(db);
+db.Student.associate(db);
+db.Drill.associate(db);
 db.DrillStatus.associate(db);
 db.DrillLevel.associate(db);
 db.Question.associate(db);

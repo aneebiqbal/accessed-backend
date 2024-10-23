@@ -26,8 +26,9 @@ module.exports = (sequelize) => {
   });
   
   Test.associate = (models) => {
-    Test.hasMany(models.Student, { foreignKey: 'test_id', as: 'Student' });
-    Test.hasMany(models.TestTopic, { foreignKey: 'test_id', as: 'testTopic' });
+    Test.hasMany(models.Student, { foreignKey: 'test_id', });
+    Test.hasMany(models.TestTopic, { foreignKey: 'test_id' });
+
   };
 
   return Test;

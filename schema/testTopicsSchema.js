@@ -25,13 +25,11 @@ module.exports = (sequelize) => {
 
   TestTopic.associate = (models) => {
     TestTopic.belongsTo(models.Test, {
-      foreignKey: 'test_id',
-      as: 'test',
+      foreignKey: 'test_id'
     });
     
     TestTopic.belongsTo(models.Topic, {
-      foreignKey: 'topic_id',
-      as: 'topic'
+      foreignKey: 'topic_id'
     });
   };
 
