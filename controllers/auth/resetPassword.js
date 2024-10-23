@@ -6,7 +6,17 @@ exports.resetPassword = async (req, res) => {
   const { newPassword } = req.body;
   const { token } = req.query;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.decode(token);
+
+    if (!payload || !payload.id || !payload.email) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Invalid token" });
+    }
+
+    const _user = await db.Student.findOne({ where: { id: payload.id } });
+
+    const decoded = jwt.verify(token, _user.password);
     if (!decoded) {
       return res
         .status(404)
@@ -27,13 +37,20 @@ exports.resetPassword = async (req, res) => {
 
     const result = {
       data: {},
-      status: "success",
+      status: 200,
       message: "Password has been reset successfully",
     };
 
     res.status(200).json(result);
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
+    if (
+      error.name === "JsonWebTokenError" &&
+      error.message === "invalid signature"
+    ) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Password has been reset already" });
+    } else if (error.name === "TokenExpiredError") {
       return res
         .status(400)
         .json({ status: "error", message: "Reset token has expired" });

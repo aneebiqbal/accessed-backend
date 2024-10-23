@@ -14,11 +14,11 @@ exports.forgotPassword = async (req, res) => {
     }
     const resetToken = jwt.sign(
       { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
+      user.password,
       { expiresIn: "15m" }
     );
 
-    const resetLink = `${process.env.FRONTEND_URL}/auth/resetPassword?token=${resetToken}`; // Replace with frontend URL
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`; // Replace with frontend URL
 
     const transporter = nodemailer.createTransport({
       service: "Gmail",
@@ -39,7 +39,7 @@ exports.forgotPassword = async (req, res) => {
 
     const result = {
       data: {},
-      status: "success",
+      status: 200,
       message: "Password reset link sent to your email",
     };
 
