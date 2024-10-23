@@ -1,20 +1,14 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { Student: User, Test, ExternalSourceType } = require("../../db/db");
-const { registrationSchema } = require("../../validations/userValidation");
+const { db } = require("../../db/db");
 const {
   studentRegistrationSchema,
 } = require("../../validations/studentValidation");
 
-exports.createErrorResponse = (errors) => {
-  if (!Array.isArray(errors)) {
-    return { status: "error", error: errors };  // For single error messages
-  }
-  return { status: "error", errors: errors.map(err => err.message) };  // For array of validation errors
-
-  // return { status: "error", errors: errors.map(err => err.message) };
-};
-
+exports.createErrorResponse = (message) => {
+    return { status: "error", error: message };
+  };
+  
 exports.register = async (req, res) => {
   try {
     const { error } = studentRegistrationSchema.validate(req.body, {
@@ -23,7 +17,7 @@ exports.register = async (req, res) => {
     if (error) {
       return res
         .status(400)
-        .json(this.createErrorResponse(error.details));
+        .json(this.createErrorResponse(error.details[0].message));
     }
 
     const { first_name, last_name, password, number, test_id } = req.body;
@@ -31,7 +25,7 @@ exports.register = async (req, res) => {
     const email = req.body.email.toLowerCase()
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const existingUser = await User.findOne({
+    const existingUser = await db.Student.findOne({
       where: { email: email },
     });
     if (existingUser) {
@@ -40,13 +34,12 @@ exports.register = async (req, res) => {
         .json({ status: "error", error: "Email already exists" });
     }
 
-    // Check if test_id exists in the Tests table
-    const testExists = await Test.findByPk(test_id);
+    const testExists = await db.Test.findByPk(test_id);
     if (!testExists) {
       return res.status(400).json({ message: 'Invalid test_id: Test not found' });
     }
 
-    const newUser = await User.create({
+    const newUser = await db.Student.create({
       first_name,
       last_name,
       number,
@@ -61,16 +54,18 @@ exports.register = async (req, res) => {
         expiresIn: "7d",
       }
     );
-    res.status(200).json({
+
+    const result = {
       token: token,
-      username: newUser.userName,
       email: newUser.email,
       Id: newUser.id,
       first_name: newUser.first_name,
       last_name: newUser.last_name,
       number: newUser.number,
       test_id: newUser.test_id      
-    });
+    }
+
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send("Error registering user");

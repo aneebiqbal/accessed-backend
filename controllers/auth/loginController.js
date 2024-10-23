@@ -1,10 +1,10 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { Student: User } = require("../../db/db");
+const { db } = require("../../db/db");
 
 exports.login = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { email: req.body.email.toLowerCase() } });
+    const user = await db.Student.findOne({ where: { email: req.body.email.toLowerCase() } });
 
     if (!user) {
       return res.status(400).json({ status: "error", error: "Invalid email or password" });
@@ -29,16 +29,16 @@ exports.login = async (req, res) => {
       }
     );
 
-    res.status(200).json({
+    const result ={
       token: token,
-      username: user.userName,
       email: user.email,
       Id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
       number: user.number,
       test_id: user.test_id
-    })
+    }
+    res.status(200).json(result)
   } catch (error) {
     console.error("Error during authentication:", error);
     res.status(500).json({ status: "error", error: "Authentication failed" });

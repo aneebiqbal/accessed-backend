@@ -1,4 +1,4 @@
-const { Student: User, Test } = require("../../db/db");
+const { db } = require("../../db/db");
 const authMiddleware = require("../../middleware/authMiddleware");
 const {
   firstNameSchema,
@@ -18,7 +18,7 @@ exports.updateUser = async (req, res) => {
         number,
       } = req.body;
 
-      const user = await User.findByPk(userId, {
+      const user = await db.Student.findByPk(userId, {
         attributes: { exclude: ["password"] },
       });
       if (!user) {
@@ -31,7 +31,7 @@ exports.updateUser = async (req, res) => {
         if (error) {
           return res
             .status(400)
-            .json(createErrorResponse(error.details));
+            .json(createErrorResponse(error.details[0].message));
         }
 
         user.first_name = first_name;
@@ -44,15 +44,14 @@ exports.updateUser = async (req, res) => {
         if (error) {
           return res
             .status(400)
-            .json(createErrorResponse(error.details));
+            .json(createErrorResponse(error.details[0].message));
         }
 
         user.last_name = last_name;
       }
 
       if (test_id) {
-        // Check if test_id exists in the Tests table
-        const testExists = await Test.findByPk(test_id);
+        const testExists = await db.Test.findByPk(test_id);
         if (!testExists) {
           return res
             .status(400)
@@ -69,13 +68,13 @@ exports.updateUser = async (req, res) => {
         if (error) {
           return res
             .status(400)
-            .json(createErrorResponse(error.details));
+            .json(createErrorResponse(error.details[0].message));
         }
 
         user.number = number;
       }
       await user.save();
-      const updatedUser = await User.findByPk(userId, {
+      const updatedUser = await db.Student.findByPk(userId, {
         attributes: { exclude: ["password"] },
       });
       return res
