@@ -11,7 +11,7 @@ const testTopicsSchema = require('../schema/testTopicsSchema');
 const topicsSchema = require('../schema/topicSchema');
 
 
- const sequelize = new Sequelize({
+const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -27,7 +27,6 @@ const topicsSchema = require('../schema/topicSchema');
 
 });
 
-// const User = UserModel(sequelize);
 const Student = studentSchema(sequelize);
 const Drill = drillSchema(sequelize);
 const DrillStatus = drillStatus(sequelize);
@@ -39,6 +38,34 @@ const TestTopic = testTopicsSchema(sequelize);
 const Topic = topicsSchema(sequelize);
 
 
+const db = {
+  Drill,
+  DrillStatus,
+  DrillLevel,
+  Question,
+  QuestionStatus,
+  Student,
+  Test,
+  TestTopic,
+  Topic
+};
+
+// =>this below function is used to run the assosiations
+// for (const modelName in sequelize.models) {
+//   if (sequelize.models[modelName].associate) {
+//     sequelize.models[modelName].associate(sequelize.models);
+//   }
+// }
+
+// db.Student.associate(db);
+// db.Drill.associate(db);
+db.DrillStatus.associate(db);
+db.DrillLevel.associate(db);
+db.Question.associate(db);
+db.QuestionStatus.associate(db);
+db.Test.associate(db);
+db.TestTopic.associate(db);
+db.Topic.associate(db);
 
 sequelize.sync();
 
@@ -51,15 +78,4 @@ sequelize.sync();
 //     console.error('Error dropping and recreating tables:', error);
 //   });
 
-module.exports = {
-  // User,
-  Drill,
-  DrillStatus,
-  DrillLevel,
-  Question,
-  QuestionStatus,
-  Student,
-  Test,
-  TestTopic,
-  Topic
-};
+module.exports = db;

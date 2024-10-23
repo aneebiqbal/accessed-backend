@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
 const authRoutes = require('./routes/auth');
-
+const appRoutes = require('./routes/app');
 
 const app = express();
 app.use(express.json({ limit: "80mb" })); 
@@ -13,6 +13,7 @@ app.use(cors());
 // app.set('trust proxy', 1); 
 
 app.use('/auth', authRoutes);
+app.use('/app', appRoutes);
 
 
 const port = process.env.PORT || 3000;
@@ -20,4 +21,4 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-module.exports = app
+module.exports = app;

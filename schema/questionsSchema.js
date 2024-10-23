@@ -36,6 +36,10 @@ module.exports = (sequelize) => {
       },
     },
   });
-
+  
+  Question.associate = (models) => {
+    Question.belongsTo(models.Drill, { foreignKey: 'drill_id' });
+    Question.hasMany(models.QuestionStatus, { foreignKey: 'question_id' });
+  };
   return Question;
 };

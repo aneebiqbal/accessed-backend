@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Student: User } = require("../db/db");
+const { User, Student } = require("../db/db");
 
 module.exports = async (req, res, next) => {
   try {
@@ -19,7 +19,7 @@ module.exports = async (req, res, next) => {
       return res.status(401).json({ error: "Invalid token payload" });
     }
 
-    const user = await User.findByPk(decoded.id);
+    const user = await Student.findByPk(decoded.id);
 
     if (!user) {
       return res.status(401).json({ error: "Unauthorized: User not found" });

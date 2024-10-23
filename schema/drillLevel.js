@@ -38,6 +38,12 @@ module.exports = (sequelize) => {
       type: DataTypes.FLOAT,
     },
   });
+  
+  DrillLevel.associate = (models) => {
+    DrillLevel.belongsTo(models.Drill, { foreignKey: 'drill_id' });
+    DrillLevel.belongsTo(models.Student, { foreignKey: 'std_id' });
+  };
+
 
   return DrillLevel;
 };

@@ -23,5 +23,17 @@ module.exports = (sequelize) => {
     },
   });
 
+  TestTopic.associate = (models) => {
+    TestTopic.belongsTo(models.Test, {
+      foreignKey: 'test_id',
+      as: 'test',
+    });
+    
+    TestTopic.belongsTo(models.Topic, {
+      foreignKey: 'topic_id',
+      as: 'topic'
+    });
+  };
+
   return TestTopic;
 };
