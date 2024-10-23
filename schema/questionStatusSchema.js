@@ -26,5 +26,9 @@ module.exports = (sequelize) => {
     },
   });
 
+  QuestionStatus.associate = (models) => {
+    QuestionStatus.belongsTo(models.Question, { foreignKey: 'question_id' });
+    QuestionStatus.belongsTo(models.Student, { foreignKey: 'student_id' });
+  };
   return QuestionStatus;
 };

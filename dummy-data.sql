@@ -57,7 +57,7 @@ VALUES
         'john.doe@example.com',
         '1234567890',
         'password123',
-        1,
+        4,
         NOW(),
         NOW()
     ),
@@ -67,7 +67,7 @@ VALUES
         'jane.smith@example.com',
         '0987654321',
         'password456',
-        2,
+        5,
         NOW(),
         NOW()
     ),
@@ -77,7 +77,7 @@ VALUES
         'bob.johnson@example.com',
         '1122334455',
         'password789',
-        1,
+        6,
         NOW(),
         NOW()
     );
@@ -181,9 +181,6 @@ VALUES
         NOW(),
         NOW()
     );
-
-
-
 
 
 -- Insert dummy data into DrillStatus table
