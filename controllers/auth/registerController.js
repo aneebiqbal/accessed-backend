@@ -60,12 +60,12 @@ exports.register = async (req, res) => {
     const result = {
       data: {
         token: token,
-        email: user.email,
-        id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        number: user.number,
-        test_id: user.test_id,
+        email: newUser.email,
+        id: newUser.id,
+        first_name: newUser.first_name,
+        last_name: newUser.last_name,
+        number: newUser.number,
+        test_id: newUser.test_id,
       },
       status: 200,
       message: "success",
