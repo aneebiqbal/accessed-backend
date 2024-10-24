@@ -1,54 +1,13 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const db = require("../../db/db");
+const { loginUser } = require('../../services/auth/login.service');
 
 exports.login = async (req, res) => {
   try {
-    const user = await db.Student.findOne({
-      where: { email: req.body.email.toLowerCase() },
-    });
+    const { email, password } = req.body;
+    const result = await loginUser({ email, password });
 
-    if (!user) {
-      return res
-        .status(400)
-        .json({ status: "error", error: "Invalid email or password" });
-    }
-
-    const isPasswordValid = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
-
-    if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ status: "error", error: "Invalid email or password" });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
-
-    const result = {
-      data: {
-        token: token,
-        email: user.email,
-        id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        number: user.number,
-        test_id: user.test_id,
-      },
-      status: 200,
-      message: "success",
-    };
-    res.status(200).json(result);
+    res.status(result.status).json(result);
   } catch (error) {
-    console.error("Error during authentication:", error);
+    console.error("Error in controller login:", error);
     res.status(500).json({ status: "error", error: "Authentication failed" });
   }
 };

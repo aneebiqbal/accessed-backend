@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-const { User, Student } = require("../db/db");
+const { Student } = require("../db/db");
+const { verifyToken } = require("../helpers/jwt");
 
 module.exports = async (req, res, next) => {
   try {
@@ -11,8 +11,8 @@ module.exports = async (req, res, next) => {
     }
 
     // Verify the token and extract the user ID
-    const secretKey = process.env.JWT_SECRET_KEY || "secret-key";
-    const decoded = jwt.verify(token.replace("Bearer ", ""), secretKey);
+    const secretKey = process.env.JWT_SECRET || "secret-key";
+    const decoded = verifyToken(token.replace("Bearer ", ""), secretKey);
     console.log("Decoded Token:", decoded);
 
     if (!decoded.id) {
