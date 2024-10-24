@@ -18,7 +18,7 @@ const studentRegistrationSchema = Joi.object({
         'any.required': 'Email is required.'
     }),
     number: Joi.string().pattern(/^(?:\+92|92|0)?3[0-9]{2}[0-9]{7}$/).required().messages({   // Pakistani mobile number format
-        'string.pattern.base': 'Please enter a valid Pakistani mobile number.',
+        'string.pattern.base': 'Please enter a valid mobile number of pakistan.',
         'any.required': 'Mobile number is required.'
     }),
     password: Joi.string()
@@ -56,7 +56,7 @@ const lastNameSchema = Joi.object({
 
 const numberSchema = Joi.object({
     number: Joi.string().pattern(/^(?:\+92|92|0)?3[0-9]{2}[0-9]{7}$/).required().messages({   // Pakistani mobile number format
-        'string.pattern.base': 'Please enter a valid Pakistani mobile number.',
+        'string.pattern.base': 'Please enter a valid mobile number of pakistan.',
         'any.required': 'Mobile number is required.'
     }),
 });
