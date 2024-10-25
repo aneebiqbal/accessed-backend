@@ -16,10 +16,10 @@ module.exports = (sequelize) => {
     },
     std_id: {
       type: DataTypes.INTEGER,
-      // references: {
-      //   model: 'Student',
-      //   key: 'id',
-      // },
+      references: {
+        model: 'Students',
+        key: 'id',
+      },
     },
     time: {
       type: DataTypes.STRING,
