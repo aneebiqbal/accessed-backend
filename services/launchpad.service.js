@@ -20,7 +20,6 @@ const fetchLaunchpadData = async (userId) => {
       include: [{
         model: db.TestTopic,
         where: { test_id: testInfo.id },
-        as: 'testTopics'
       }],
       attributes: ['title', 'description'],
     });

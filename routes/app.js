@@ -1,6 +1,6 @@
 const express = require("express");
 const { getLaunchpadData } = require("../controllers/app/launchpad");
-const { getLessonsDrills } = require("../controllers/app/lessonsDrills");
+const { getLessonsDrills, getDrillById } = require("../controllers/app/lessonsDrills");
 const router = express.Router();
 
 
@@ -10,5 +10,8 @@ router.get("/launchpad", getLaunchpadData);
 
 //lessonsDrills
 router.get("/lessons-drills", getLessonsDrills);
+
+//getDrillById
+router.get("/drill/:id", getDrillById);
 
 module.exports = router;
