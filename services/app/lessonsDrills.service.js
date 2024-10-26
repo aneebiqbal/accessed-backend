@@ -1,4 +1,5 @@
-const db = require('../db/db');
+
+const db = require("../../db/db");
 
 const fetchLessonsDrills = async (studentId) => {
   try {

@@ -1,5 +1,5 @@
 const authMiddleware = require('../../middleware/authMiddleware');
-const { fetchLaunchpadData } = require('../../services/launchpad.service');
+const { fetchLaunchpadData } = require('../../services/app/launchpad.service');
 
 const getLaunchpadData = async (req, res) => {
   try {
