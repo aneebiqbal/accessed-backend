@@ -1,6 +1,6 @@
 const db = require('../../db/db');
 const authMiddleware = require('../../middleware/authMiddleware');
-const { fetchLessonsDrills } = require('../../services/lessonsDrills.service');
+const { fetchLessonsDrills } = require('../../services/app/lessonsDrills.service');
 
 const getLessonsDrills = async (req, res) => {
   try {

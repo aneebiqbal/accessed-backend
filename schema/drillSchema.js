@@ -14,6 +14,11 @@ module.exports = (sequelize) => {
     video: {
       type: DataTypes.STRING,
     },
+    parent_drill_id: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
+      allowNull: true,
+    },
+
     topic_id: {
       type: DataTypes.INTEGER,
       references: {
