@@ -33,6 +33,27 @@ exports.registerUser = async ({ first_name, last_name, password, number, email, 
       { expiresIn: "7d" }
     );
 
+    const Drills = await db.Drill.findAll();
+
+        for (const drill of Drills) {
+          if (!drill.parent_drill_id || drill.parent_drill_id.length === 0) {
+            const existingStatus = await db.DrillStatus.findOne({
+              where: {
+                drill_id: drill.id,
+                student_id: newUser.id,
+              },
+            });
+
+            if (!existingStatus) {
+              await db.DrillStatus.create({
+                drill_id: drill.id,
+                student_id: newUser.id,
+                status: "inProgress",
+              });
+            }
+          }
+        }
+
     return {
       data: {
         token,
