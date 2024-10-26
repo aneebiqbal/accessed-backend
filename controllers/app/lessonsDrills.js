@@ -16,13 +16,13 @@ const getLessonsDrills = async (req, res) => {
         id: topic.Topic.id,
         title: topic.Topic.title,
         drills: Array.isArray(topic.Topic.Drills) ? topic.Topic.Drills.reduce((drillsAcc, drill) => {
-          drillsAcc[drill.title.toLowerCase()] = {
+          drillsAcc[drill.title.replace(/\s+/g, '')] = {
             id: drill.id,
             title: drill.title,
             video: drill.video || '',
             status: drill.DrillStatuses.length
               ? drill.DrillStatuses[0].status
-              : 'notStarted',
+              : 'blocked',
             level: drill.DrillLevels.length ? drill.DrillLevels[0].levels : null,
           };
           return drillsAcc;
