@@ -78,6 +78,21 @@ const getDrillById = async (req, res) => {
         });
       }
 
+      const levelZeroExists = drill.DrillLevels.some(level => level.levels === 0);
+
+      if (!levelZeroExists) {
+        const newLevel = await db.DrillLevel.create({
+          levels: 0,
+          drill_id: drill_id,
+          std_id: studentId,
+          status: 'inProgress'
+        });
+
+        drill.DrillLevels.push(newLevel);
+      }
+
+      
+
       let levels = drill.DrillLevels.map(level => ({
         id: level.id,
         level: level.levels,

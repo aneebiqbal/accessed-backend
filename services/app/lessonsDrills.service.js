@@ -25,6 +25,8 @@ const fetchLessonsDrills = async (studentId) => {
                   {
                     model: db.DrillLevel,
                     attributes: ['id', 'levels'],
+                    where: { std_id: studentId },
+                    required: false,
                   },
                   {
                     model: db.DrillStatus,
