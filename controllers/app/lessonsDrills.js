@@ -42,7 +42,7 @@ const getDrillById = async (req, res) => {
   try {
     await authMiddleware(req, res, async () => {
       const studentId = req.user.id;
-      const drill_id = req.params.id
+      const drill_id = req.params.id;
 
       const student = await db.Student.findByPk(studentId);
       if (!student) {
@@ -68,6 +68,7 @@ const getDrillById = async (req, res) => {
       if (!drill) {
         return res.status(404).json({ error: 'Drill not found' });
       }
+
       let isAccessible = drill.DrillStatuses.some(status => status.status !== 'Blocked');
 
       if (!isAccessible) {
@@ -78,32 +79,25 @@ const getDrillById = async (req, res) => {
         });
       }
 
-      const levelZeroExists = drill.DrillLevels.some(level => level.levels === 0);
+      const totalLevels = 7;
+      const levels = [];
 
-      if (!levelZeroExists) {
-        const newLevel = await db.DrillLevel.create({
-          levels: 0,
-          drill_id: drill_id,
-          std_id: studentId,
-          status: 'inProgress'
-        });
-
-        drill.DrillLevels.push(newLevel);
-      }
-
-      let levels = drill.DrillLevels.map(level => ({
-        id: level.id,
-        level: level.levels,
-        status: level.status || 'Blocked',
-      }));
-
-      const totalLevels = 6;
-      for (let i = levels.length; i < totalLevels; i++) {
-        levels.push({
-          id: null,
-          level: levels.length + 1,
-          status: 'Blocked'
-        });
+      for (let i = 0; i < totalLevels; i++) {
+        const existingLevel = drill.DrillLevels.find(level => level.levels === i);
+        
+        if (existingLevel) {
+          levels.push({
+            id: existingLevel.id,
+            level: existingLevel.levels,
+            status: existingLevel.status,
+          });
+        } else {
+          levels.push({
+            id: null,
+            level: i,
+            status: 'Blocked'
+          });
+        }
       }
 
       levels.sort((a, b) => a.level - b.level);
@@ -113,17 +107,17 @@ const getDrillById = async (req, res) => {
       let foundInProgress = false;
 
       levels.forEach((level) => {
-        if (level.status === 'inProgress') {
+        if (level.status === 'inProgress' && startPoint === null) {
           startPoint = level.level;
           foundInProgress = true;
         }
 
-        if (foundInProgress && level.status === 'Blocked' && !endPoint) {
+        if (foundInProgress && level.status === 'Blocked' && endPoint === null) {
           endPoint = level.level;
         }
       });
 
-      if (startPoint === 6) {
+      if (startPoint === totalLevels - 1) {
         endPoint = null;
       }
 
@@ -131,14 +125,14 @@ const getDrillById = async (req, res) => {
         id: drill.id,
         title: drill.title,
         video: drill.video || '',
-        drills: levels.slice(0, totalLevels),
+        drills: levels,
         score: drill.DrillLevels.reduce((acc, level) => acc + (level.score || 0), 0),
         startPoint,
         endPoint,
       };
 
       return res.json(response);
-    })
+    });
   } catch (error) {
     console.error('Error fetching drills by id:', error);
     return res.status(500).json({ error: 'Failed to fetch drills by id' });
