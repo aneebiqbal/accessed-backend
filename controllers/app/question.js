@@ -119,6 +119,8 @@ const submitQuestion = async (req, res) => {
               options: unattemptedQuestion.options,
               score: newScore
             },
+            promoted,
+            demoted,
             Answer: unattemptedQuestion.correct_answer,
           });
         }
@@ -270,21 +272,21 @@ const submitQuestion = async (req, res) => {
 
       if (unattemptedQuestion) {
         return res.json({
-          nextQuestion: {
-            id: unattemptedQuestion.id,
-            question_type: unattemptedQuestion.questionType,
-            passage: unattemptedQuestion.passage || "",
-            statement: unattemptedQuestion.statement,
-            image: unattemptedQuestion.image || "",
-            options: unattemptedQuestion.options,
-            score: newScore,
-            isTimed: drillLevel.isTime,
-            time: drillLevel.time,
-            wrong_attempts: wrongAttempts,
-          },
-          promoted,
-          demoted,
-          Answer: question.correct_answer,
+            nextQuestion: promoted || demoted ? {} : {
+                id: unattemptedQuestion?.id || null,
+                question_type: unattemptedQuestion?.questionType || "",
+                passage: unattemptedQuestion?.passage || "",
+                statement: unattemptedQuestion?.statement || "",
+                image: unattemptedQuestion?.image || "",
+                options: unattemptedQuestion?.options || [],
+                score: newScore,
+                isTimed: drillLevel?.isTime || false,
+                time: drillLevel?.time || "",
+                wrong_attempts: wrongAttempts,
+              },
+            promoted,
+            demoted,
+            Answer: question.correct_answer,
         });
       }
     });
