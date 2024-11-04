@@ -22,7 +22,7 @@ router.get("/drill/:id", getDrillById);
 router.get("/getQuestion/:id", getQuestion);
 
 //submitQuestion
-router.post("/submitQuestion/:id", submitQuestion);
+router.post("/submitQuestion", submitQuestion);
 
 
 module.exports = router;

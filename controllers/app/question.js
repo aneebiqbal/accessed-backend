@@ -77,8 +77,7 @@ const submitQuestion = async (req, res) => {
   try {
     await authMiddleware(req, res, async () => {
       const studentId = req.user.id;
-      const drill_id = Number(req.params.id);
-      const { questionId, answer } = req.body;
+    const { drill_id, questionId, answer } = req.body;
 
       const [student, drillLevel, question] = await Promise.all([
         db.Student.findByPk(studentId),
@@ -125,7 +124,7 @@ const submitQuestion = async (req, res) => {
           });
         }
       }
-      if (!student || (!drillLevel && !isDrillCompleted) || !question) {
+      if (!student || !question) {
         return res.status(404).json({ error: "Required data not found" });
       }
 
@@ -260,6 +259,13 @@ const submitQuestion = async (req, res) => {
           await previousLevel.update({ status: "inProgress", score: 40 });
         }
       } 
+
+      if (!promoted && !demoted) {
+        await db.DrillLevel.update(
+          { score: newScore },
+          { where: { drill_id, std_id: studentId, levels: drillLevel.levels, status: "inProgress" } }
+        );
+      }
 
       let wrongAttempts = 0;
       if (newScore === -20) wrongAttempts = 1;
