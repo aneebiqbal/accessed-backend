@@ -46,20 +46,25 @@ const fetchLessonsDrills = async (studentId) => {
     const formattedTopics = testTopics.map((topic) => ({
       id: topic.Topic?.id,
       title: topic.Topic?.title,
-      drills: topic.Topic.Drills.map((drill) => ({
-        id: drill.id,
-        title: drill.title,
-        video: drill.video || '',
-        status: drill.DrillStatuses.length > 0 ? drill.DrillStatuses[0].status : 'Blocked',
-        level: drill.DrillLevels.length > 0 ? drill.DrillLevels[0].levels : 0,
-      })),
+      drills: Array.isArray(topic.Topic.Drills) ? topic.Topic.Drills.reduce((drillsAcc, drill) => {
+        drillsAcc[drill.title.replace(/\s+/g, '')] = {
+          id: drill.id,
+          title: drill.title,
+          video: drill.video || '',
+          status: drill.DrillStatuses.length
+            ? drill.DrillStatuses[0].status
+            : 'Blocked',
+          level: drill.DrillLevels.length ? drill.DrillLevels[0].levels : 0,
+        };
+        return drillsAcc;
+      }, {}) : {},
     }));
 
     return { testTopics: formattedTopics };
 
   } catch (error) {
-    console.error('Error in fetching launchpad data:', error);
-    throw new Error('Failed to fetch launchpad data');
+    console.error('Error in fetching Lessons and drills:', error);
+    throw new Error('Failed to fetch Lessons and drills');
   }
 };
 
