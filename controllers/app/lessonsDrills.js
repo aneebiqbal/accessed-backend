@@ -12,24 +12,7 @@ const getLessonsDrills = async (req, res) => {
         return res.status(404).json({ message: 'No topics found for this test' });
       }
 
-      const formattedResponse = testTopics.map((topic) => ({
-        id: topic.Topic.id,
-        title: topic.Topic.title,
-        drills: Array.isArray(topic.Topic.Drills) ? topic.Topic.Drills.reduce((drillsAcc, drill) => {
-          drillsAcc[drill.title.replace(/\s+/g, '')] = {
-            id: drill.id,
-            title: drill.title,
-            video: drill.video || '',
-            status: drill.DrillStatuses.length
-              ? drill.DrillStatuses[0].status
-              : 'Blocked',
-            level: drill.DrillLevels.length ? drill.DrillLevels[0].levels : null,
-          };
-          return drillsAcc;
-        }, {}) : {},
-      }));
-
-      res.status(200).json({ topics: formattedResponse });
+      res.status(200).json({ topics: testTopics });
 
     })
   } catch (error) {
