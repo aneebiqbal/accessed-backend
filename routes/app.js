@@ -1,7 +1,7 @@
 const express = require("express");
 const { getLaunchpadData } = require("../controllers/app/launchpad");
 const { getLessonsDrills, getDrillById, checkDrillVideoStatus } = require("../controllers/app/lessonsDrills");
-const { getQuestion } = require("../controllers/app/question");
+const { getQuestion, submitQuestion } = require("../controllers/app/question");
 const router = express.Router();
 
 
@@ -21,6 +21,8 @@ router.get("/drill/:id", getDrillById);
 //getQuestion
 router.get("/getQuestion/:id", getQuestion);
 
+//submitQuestion
+router.post("/submitQuestion", submitQuestion);
 
 
 module.exports = router;
