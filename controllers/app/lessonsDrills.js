@@ -128,6 +128,7 @@ const getDrillById = async (req, res) => {
   }
 };
 
+
 const checkDrillVideoStatus = async (req, res) => {
   try {
     await authMiddleware(req, res, async () => {
@@ -142,41 +143,42 @@ const checkDrillVideoStatus = async (req, res) => {
         },
       });
 
-      if (levelZeroEntry) {
-        if (levelZeroEntry.status === 'inProgress') {
-          await levelZeroEntry.update({ status: 'Completed' });
-          return res.json({ message: 'Level 0 status updated to completed.' });
-
-        } else if (levelZeroEntry.status === 'Completed') {
-          const levelOneEntry = await db.DrillLevel.findOne({
-            where: {
-              drill_id: drill_id,
-              std_id: studentId,
-              levels: 1,
-            },
-          });
-
-          if (!levelOneEntry) {
-            await db.DrillLevel.create({
-              drill_id: drill_id,
-              std_id: studentId,
-              levels: 1,
-              status: 'inProgress',
-            });
-            return res.json({ message: 'New entry for level 1 created with status inProgress.' });
-          } else {
-            return res.json({ message: 'Level 1 entry already exists.' });
-          }
-        }
-      } else {
+      if (!levelZeroEntry) {
         return res.status(404).json({ error: 'Level 0 entry not found for the given drill and student.' });
+      }
+
+      if (levelZeroEntry.status === 'inProgress') {
+        await levelZeroEntry.update({ status: 'Completed' });
+      }
+
+      const levelOneEntry = await db.DrillLevel.findOne({
+        where: {
+          drill_id: drill_id,
+          std_id: studentId,
+          levels: 1,
+        },
+      });
+
+      if (!levelOneEntry) {
+        await db.DrillLevel.create({
+          drill_id: drill_id,
+          std_id: studentId,
+          levels: 1,
+          status: 'inProgress',
+        });
+        return res.json({
+          message: 'Level 0 status updated to Completed. New entry for level 1 created with status inProgress.',
+        });
+      } else {
+        return res.json({ message: 'Level 0 status updated to Completed. Level 1 entry already exists.' });
       }
     });
   } catch (error) {
-    console.error(':', error);
-    return res.status(500).json({ error: '' });
+    console.error('Error updating drill video status:', error);
+    return res.status(500).json({ error: 'Failed to update drill video status' });
   }
 };
+
 
 
 module.exports = { getLessonsDrills, getDrillById, checkDrillVideoStatus };
