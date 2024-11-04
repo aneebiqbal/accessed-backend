@@ -1,5 +1,6 @@
 const db = require('../../db/db');
 const authMiddleware = require('../../middleware/authMiddleware');
+const drillLevel = require('../../schema/drillLevel');
 const { fetchLessonsDrills } = require('../../services/app/lessonsDrills.service');
 
 const getLessonsDrills = async (req, res) => {
@@ -20,6 +21,7 @@ const getLessonsDrills = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch drills data' });
   }
 };
+
 
 const getDrillById = async (req, res) => {
   try {
@@ -52,14 +54,18 @@ const getDrillById = async (req, res) => {
         return res.status(404).json({ error: 'Drill not found' });
       }
 
-      let isAccessible = drill.DrillStatuses.some(status => status.status !== 'Blocked');
-
-      if (!isAccessible) {
-        return res.json({
-          success: true,
-          message: 'Drill is blocked and cannot be accessed.',
-          result: []
+      let levelZero = drill.DrillLevels.find(level => level.levels === 0);
+      if (!levelZero) {
+        levelZero = await db.DrillLevel.create({
+          std_id: studentId,
+          drill_id: drill_id,
+          levels: 0,
+          status: 'inProgress'
         });
+
+        drill.DrillLevels.push(levelZero);
+      } else if (levelZero.status === 'Blocked') {
+        await levelZero.update({ status: 'inProgress' });
       }
 
       const totalLevels = 7;
@@ -67,7 +73,7 @@ const getDrillById = async (req, res) => {
 
       for (let i = 0; i < totalLevels; i++) {
         const existingLevel = drill.DrillLevels.find(level => level.levels === i);
-        
+
         if (existingLevel) {
           levels.push({
             id: existingLevel.id,
@@ -117,8 +123,8 @@ const getDrillById = async (req, res) => {
       return res.json(response);
     });
   } catch (error) {
-    console.error('Error fetching drills by id:', error);
-    return res.status(500).json({ error: 'Failed to fetch drills by id' });
+    console.error('Error fetching drill by id:', error);
+    return res.status(500).json({ error: 'Failed to fetch drill by id' });
   }
 };
 
