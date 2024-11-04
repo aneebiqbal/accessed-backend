@@ -116,10 +116,8 @@ const submitQuestion = async (req, res) => {
               statement: unattemptedQuestion.statement,
               image: unattemptedQuestion.image || "",
               options: unattemptedQuestion.options,
-              score: newScore
+              score: 100
             },
-            promoted,
-            demoted,
             Answer: unattemptedQuestion.correct_answer,
           });
         }
