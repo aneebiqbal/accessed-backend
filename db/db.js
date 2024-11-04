@@ -8,7 +8,7 @@ const studentSchema = require('../schema/studentSchema');
 const testSchema = require('../schema/testSchema');
 const testTopicsSchema = require('../schema/testTopicsSchema');
 const topicsSchema = require('../schema/topicSchema');
-
+const enrollmentsSchema = require('../schema/enrollments');
 
 const sequelize = new Sequelize({
   database: process.env.DB_NAME,
@@ -35,6 +35,7 @@ const QuestionStatus = questionStatusSchema(sequelize);
 const Test = testSchema(sequelize);
 const TestTopic = testTopicsSchema(sequelize);
 const Topic = topicsSchema(sequelize);
+const enrollments = enrollmentsSchema(sequelize);
 
 
 const db = {
@@ -46,7 +47,8 @@ const db = {
   Student,
   Test,
   TestTopic,
-  Topic
+  Topic,
+  enrollments
 };
 
 // =>this below function is used to run the assosiations
