@@ -11,6 +11,17 @@ const getQuestion = async (req, res) => {
       const studentId = req.user.id;
       const drill_id = req.params.id;
 
+      const inProgressLevel = await db.DrillLevel.findOne({
+        where: { drill_id, std_id: studentId },
+        attributes: ['levels'],
+        order: [['updatedAt', 'DESC']]
+      });
+
+      if (!inProgressLevel) {
+        return res.status(404).json({ error: "In-progress level not found" });
+      }
+
+      const currentLevel = inProgressLevel.levels;
       const {
         allQuestionsAttempted,
         incorrectQuestions,
@@ -21,36 +32,9 @@ const getQuestion = async (req, res) => {
         endPoint,
         score,
         wrongAttempts,
-      } = await getQuestionDetails(studentId, drill_id);
-
-      if (allQuestionsAttempted && incorrectQuestions.length > 0) {
-        return res.json({
-          questions: incorrectQuestions.map((question) => ({
-            id: question.id,
-            question_type: question.questionType,
-            passage: question.passage || "",
-            statement: question.statement,
-            image: question.image || "",
-            options: question.options,
-            startPoint,
-            endPoint,
-            score,
-            isTimed: isTimed,
-            time: timeLimit,
-            wrong_attempts: wrongAttempts,
-          })),
-        });
-      }
+      } = await getQuestionDetails(studentId, drill_id, currentLevel);
 
       if (unattemptedQuestion) {
-        // const studentAttempt = unattemptedQuestion.QuestionStatuses[0];
-        // const questionScore = studentAttempt
-        //   ? studentAttempt.attempted_answer ===
-        //     unattemptedQuestion.correct_answer
-        //     ? score + 20
-        //     : score - 20
-        //   : score;
-
         return res.json({
           id: unattemptedQuestion.id,
           question_type: unattemptedQuestion.questionType,
@@ -58,6 +42,24 @@ const getQuestion = async (req, res) => {
           statement: unattemptedQuestion.statement,
           image: unattemptedQuestion.image || "",
           options: unattemptedQuestion.options,
+          startPoint,
+          endPoint,
+          score,
+          isTimed: isTimed,
+          time: timeLimit,
+          wrong_attempts: wrongAttempts,
+        });
+      }
+
+      if (allQuestionsAttempted && incorrectQuestions.length > 0) {
+        const nextIncorrectQuestion = incorrectQuestions.shift();
+        return res.json({
+          id: nextIncorrectQuestion.id,
+          question_type: nextIncorrectQuestion.questionType,
+          passage: nextIncorrectQuestion.passage || "",
+          statement: nextIncorrectQuestion.statement,
+          image: nextIncorrectQuestion.image || "",
+          options: nextIncorrectQuestion.options,
           startPoint,
           endPoint,
           score,
