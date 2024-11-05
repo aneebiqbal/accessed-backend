@@ -283,7 +283,7 @@ const submitQuestion = async (req, res) => {
       else if (newScore === -60) wrongAttempts = 3;
 
       const { allQuestionsAttempted, incorrectQuestions, unattemptedQuestion, startPoint, endPoint } =
-        await getQuestionDetails(studentId, drill_id);
+        await getQuestionDetails(studentId, drill_id, currentLevel=drillLevel.levels);
 
 
       if (unattemptedQuestion) {
