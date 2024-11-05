@@ -58,7 +58,7 @@ const getQuestionDetails = async (studentId, drill_id) => {
       unattemptedQuestion,
       isTimed: drillLevel?.isTime || false,
       timeLimit: drillLevel?.isTime ? drillLevel.time : '',
-      startPoint: drillLevel?.levels || 1,
+      startPoint: drillLevel ? drillLevel.levels : 1,
       endPoint: drillLevel ? drillLevel.levels + 1 : 2,
       score,
       wrongAttempts
