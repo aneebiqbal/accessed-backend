@@ -11,6 +11,17 @@ const getQuestion = async (req, res) => {
       const studentId = req.user.id;
       const drill_id = req.params.id;
 
+      const inProgressLevel = await db.DrillLevel.findOne({
+        where: { drill_id, std_id: studentId },
+        attributes: ['levels'],
+        order: [['updatedAt', 'DESC']]
+      });
+
+      if (!inProgressLevel) {
+        return res.status(404).json({ error: "In-progress level not found" });
+      }
+
+      const currentLevel = inProgressLevel.levels;
       const {
         allQuestionsAttempted,
         incorrectQuestions,
@@ -21,7 +32,7 @@ const getQuestion = async (req, res) => {
         endPoint,
         score,
         wrongAttempts,
-      } = await getQuestionDetails(studentId, drill_id);
+      } = await getQuestionDetails(studentId, drill_id, currentLevel);
 
       if (unattemptedQuestion) {
         return res.json({
