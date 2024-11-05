@@ -7,24 +7,24 @@ module.exports = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    phoneNumber: {
+    phone: {
       type: DataTypes.INTEGER,
       unique: true,
       allowNull: false,
     },
 
-    first_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    last_name: {
+    fullName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
+    city: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
   });
 
   return Enrollments;
