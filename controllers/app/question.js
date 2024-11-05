@@ -249,14 +249,24 @@ const submitQuestion = async (req, res) => {
           }
         );
 
-        const previousLevel = await db.DrillLevel.findOne({
-          where: { drill_id, std_id: studentId, levels: drillLevel.levels - 1 },
-        });
-
-        if (previousLevel && previousLevel.status == "Completed") {
-          await previousLevel.update({ status: "inProgress", score: 40 });
+        if (drillLevel.levels === 1) {
+          const levelZero = await db.DrillLevel.findOne({
+            where: { drill_id, std_id: studentId, levels: 0 },
+          });
+      
+          if (levelZero && levelZero.status === "Completed") {
+            await levelZero.update({ status: "inProgress" });
+          }
+        } else {
+          const previousLevel = await db.DrillLevel.findOne({
+            where: { drill_id, std_id: studentId, levels: drillLevel.levels - 1 },
+          });
+      
+          if (previousLevel && previousLevel.status === "Completed") {
+            await previousLevel.update({ status: "inProgress", score: 40 });
+          }
         }
-      } 
+      }
 
       if (!promoted && !demoted) {
         await db.DrillLevel.update(
@@ -283,7 +293,7 @@ const submitQuestion = async (req, res) => {
                 statement: unattemptedQuestion?.statement || "",
                 image: unattemptedQuestion?.image || "",
                 options: unattemptedQuestion?.options || [],
-                score: newScore,
+                score: newScore <= 0 ? 0 : newScore,
                 isTimed: drillLevel?.isTime || false,
                 time: drillLevel?.time || "",
                 wrong_attempts: wrongAttempts,

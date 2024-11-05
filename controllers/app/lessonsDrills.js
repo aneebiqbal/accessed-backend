@@ -1,7 +1,9 @@
-const db = require('../../db/db');
-const authMiddleware = require('../../middleware/authMiddleware');
-const drillLevel = require('../../schema/drillLevel');
-const { fetchLessonsDrills } = require('../../services/app/lessonsDrills.service');
+const db = require("../../db/db");
+const authMiddleware = require("../../middleware/authMiddleware");
+const drillLevel = require("../../schema/drillLevel");
+const {
+  fetchLessonsDrills,
+} = require("../../services/app/lessonsDrills.service");
 
 const getLessonsDrills = async (req, res) => {
   try {
@@ -10,18 +12,18 @@ const getLessonsDrills = async (req, res) => {
 
       const { testTopics } = await fetchLessonsDrills(studentId);
       if (!testTopics.length) {
-        return res.status(404).json({ message: 'No topics found for this test' });
+        return res
+          .status(404)
+          .json({ message: "No topics found for this test" });
       }
 
       res.status(200).json({ topics: testTopics });
-
-    })
+    });
   } catch (error) {
-    console.error('Error fetching drills:', error);
-    return res.status(500).json({ error: 'Failed to fetch drills data' });
+    console.error("Error fetching drills:", error);
+    return res.status(500).json({ error: "Failed to fetch drills data" });
   }
 };
-
 
 const getDrillById = async (req, res) => {
   try {
@@ -31,7 +33,7 @@ const getDrillById = async (req, res) => {
 
       const student = await db.Student.findByPk(studentId);
       if (!student) {
-        return res.status(404).json({ error: 'Student not found' });
+        return res.status(404).json({ error: "Student not found" });
       }
 
       const drill = await db.Drill.findOne({
@@ -40,39 +42,41 @@ const getDrillById = async (req, res) => {
           {
             model: db.DrillLevel,
             where: { std_id: studentId },
-            required: false
+            required: false,
           },
           {
             model: db.DrillStatus,
             where: { student_id: studentId },
-            required: false
-          }
-        ]
+            required: false,
+          },
+        ],
       });
 
       if (!drill) {
-        return res.status(404).json({ error: 'Drill not found' });
+        return res.status(404).json({ error: "Drill not found" });
       }
 
-      let levelZero = drill.DrillLevels.find(level => level.levels === 0);
+      let levelZero = drill.DrillLevels.find((level) => level.levels === 0);
       if (!levelZero) {
         levelZero = await db.DrillLevel.create({
           std_id: studentId,
           drill_id: drill_id,
           levels: 0,
-          status: 'inProgress'
+          status: "inProgress",
         });
 
         drill.DrillLevels.push(levelZero);
-      } else if (levelZero.status === 'Blocked') {
-        await levelZero.update({ status: 'inProgress' });
+      } else if (levelZero.status === "Blocked") {
+        await levelZero.update({ status: "inProgress" });
       }
 
       const totalLevels = 7;
       const levels = [];
 
       for (let i = 0; i < totalLevels; i++) {
-        const existingLevel = drill.DrillLevels.find(level => level.levels === i);
+        const existingLevel = drill.DrillLevels.find(
+          (level) => level.levels === i
+        );
 
         if (existingLevel) {
           levels.push({
@@ -84,7 +88,7 @@ const getDrillById = async (req, res) => {
           levels.push({
             id: null,
             level: i,
-            status: 'Blocked'
+            status: "Blocked",
           });
         }
       }
@@ -96,12 +100,16 @@ const getDrillById = async (req, res) => {
       let foundInProgress = false;
 
       levels.forEach((level) => {
-        if (level.status === 'inProgress' && startPoint === null) {
+        if (level.status === "inProgress" && startPoint === null) {
           startPoint = level.level;
           foundInProgress = true;
         }
 
-        if (foundInProgress && level.status === 'Blocked' && endPoint === null) {
+        if (
+          foundInProgress &&
+          level.status === "Blocked" &&
+          endPoint === null
+        ) {
           endPoint = level.level;
         }
       });
@@ -113,9 +121,12 @@ const getDrillById = async (req, res) => {
       const response = {
         id: drill.id,
         title: drill.title,
-        video: drill.video || '',
+        video: drill.video || "",
         drills: levels,
-        score: drill.DrillLevels.reduce((acc, level) => acc + (level.score || 0), 0),
+        score: drill.DrillLevels.reduce(
+          (acc, level) => acc + (level.score || 0),
+          0
+        ),
         startPoint,
         endPoint,
       };
@@ -123,11 +134,10 @@ const getDrillById = async (req, res) => {
       return res.json(response);
     });
   } catch (error) {
-    console.error('Error fetching drill by id:', error);
-    return res.status(500).json({ error: 'Failed to fetch drill by id' });
+    console.error("Error fetching drill by id:", error);
+    return res.status(500).json({ error: "Failed to fetch drill by id" });
   }
 };
-
 
 const checkDrillVideoStatus = async (req, res) => {
   try {
@@ -144,11 +154,15 @@ const checkDrillVideoStatus = async (req, res) => {
       });
 
       if (!levelZeroEntry) {
-        return res.status(404).json({ error: 'Level 0 entry not found for the given drill and student.' });
+        return res
+          .status(404)
+          .json({
+            error: "Level 0 entry not found for the given drill and student.",
+          });
       }
 
-      if (levelZeroEntry.status === 'inProgress') {
-        await levelZeroEntry.update({ status: 'Completed' });
+      if (levelZeroEntry.status === "inProgress") {
+        await levelZeroEntry.update({ status: "Completed" });
       }
 
       const levelOneEntry = await db.DrillLevel.findOne({
@@ -164,22 +178,32 @@ const checkDrillVideoStatus = async (req, res) => {
           drill_id: drill_id,
           std_id: studentId,
           levels: 1,
-          status: 'inProgress',
+          status: "inProgress",
         });
         return res.json({
-          message: 'Level 0 status updated to Completed. New entry for level 1 created with status inProgress.',
+          message:
+            "Level 0 status updated to Completed. New entry for level 1 created with status inProgress.",
         });
       } else {
-        return res.json({ message: 'Level 0 status updated to Completed. Level 1 entry already exists.' });
+        if (levelOneEntry.status === "Blocked") {
+          await levelOneEntry.update({ status: "inProgress" });
+          return res.json({
+            message:
+              "Level 0 status updated to Completed. Level 1 status changed from Blocked to inProgress.",
+          });
+        }
+        return res.json({
+          message:
+            "Level 0 status updated to Completed. Level 1 entry already exists.",
+        });
       }
     });
   } catch (error) {
-    console.error('Error updating drill video status:', error);
-    return res.status(500).json({ error: 'Failed to update drill video status' });
+    console.error("Error updating drill video status:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to update drill video status" });
   }
 };
 
-
-
 module.exports = { getLessonsDrills, getDrillById, checkDrillVideoStatus };
-
