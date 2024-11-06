@@ -19,43 +19,25 @@ const getLaunchpadData = async (req, res) => {
           title: topic.title,
           description: topic.description,
         })),
-        //dummy graph data
-        graphData: [
-          {
-            subject: "English",
-            score: 65,
-            drills: [
-              {
-                title: "Synonyms",
-                score: 15,
-                total: 33,
-              },
-            ]
-          },
-          { subject: "General knowledge", score: 75 },
-          { subject: "Intelligence", score: 70 },
-          { subject: "Reasoning", score: 60 },
-          { subject: "Mathematics", score: 55 },
-        ]
+        graphData: graphData.map((topicData) => ({
+          subject: topicData.title,
+          score: topicData.totalScore,
+          drills: topicData.drills.map((drill) => ({
+            title: drill.title,
+            score: drill.score,
+            total: 100, 
+          })),
+        })),
 
-        //use below with real data
-        // graphdata: graphData.map((drill) => ({
-        //   subject: drill.title,
-        //   score: drill.DrillLevels.reduce((acc, level) => acc + level.score, 0),
-        //   drills: drill.DrillLevels.map((level) => ({
-        //     title: drill.title,
-        //     score: level.score,
-        //     total: level.QuestionStatuses.length,
-        //   })),
-        // })),
       };
-  
+
       return res.status(200).json(response);
-    })
+    });
   } catch (error) {
     console.error('Error fetching launchpad data:', error);
     return res.status(500).json({ error: 'Failed to fetch launchpad data' });
   }
 };
+
 
 module.exports = { getLaunchpadData };
