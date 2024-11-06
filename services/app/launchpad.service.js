@@ -1,17 +1,17 @@
-const db = require('../../db/db');
+const db = require("../../db/db");
+
 
 const fetchLaunchpadData = async (userId) => {
   try {
-
     const student = await db.Student.findOne({
-    where: { id: userId },
+      where: { id: userId },
       attributes: ['test_id'], 
-    })
+    });
 
     if (!student) {
-        throw new Error('Student not found');
-      }
-  
+      throw new Error('Student not found');
+    }
+
     const testInfo = await db.Test.findOne({
       where: { id: student.test_id },
     });
@@ -21,24 +21,48 @@ const fetchLaunchpadData = async (userId) => {
         model: db.TestTopic,
         where: { test_id: testInfo.id },
       }],
-      attributes: ['title', 'description'],
+      attributes: ['title', 'description', 'id'],
     });
-  
-    //use below func() for real-data
-    // const graphData = await db.Drill.findAll({
-    //   include: [{
-    //     model: db.DrillLevel,
-    //     attributes: ['score'],
-    //     include: {
-    //       model: db.QuestionStatus,
-    //       attributes: ['score'],
-    //     },
-    //   }],
-    //   attributes: ['title'],
-    // });
 
-    // return { testInfo, topics, graphData };
-    return { testInfo, topics };
+    const graphData = await Promise.all(
+      topics.map(async (topic) => {
+        const drills = await db.Drill.findAll({
+          where: { topic_id: topic.id },
+          include: [
+            {
+              model: db.DrillLevel,
+              attributes: ['score'],
+            },
+          ],
+        });
+
+        const drillData = drills.map((drill) => {
+          const totalScoreForDrill = drill.DrillLevels.reduce(
+            (totalScore, level) => totalScore + level.score,
+            0
+          );
+
+          const score = (totalScoreForDrill / 600) * 100;
+
+          return {
+            title: drill.title,
+            score: parseFloat(score.toFixed(2)), 
+          };
+        });
+
+        const totalScore = drillData.length
+          ? drillData.reduce((topicScore, drill) => topicScore + drill.score, 0) / drillData.length
+          : 0;
+
+        return {
+          title: topic.title,
+          totalScore: parseFloat(totalScore.toFixed(2)),
+          drills: drillData,
+        };
+      })
+    );
+
+    return { testInfo, topics, graphData };
 
   } catch (error) {
     console.error('Error in fetching launchpad data:', error);
@@ -47,3 +71,4 @@ const fetchLaunchpadData = async (userId) => {
 };
 
 module.exports = { fetchLaunchpadData };
+
