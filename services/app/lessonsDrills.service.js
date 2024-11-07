@@ -24,7 +24,7 @@ const fetchLessonsDrills = async (studentId) => {
               include: [
                 {
                   model: db.DrillLevel,
-                  attributes: ['id', 'levels'],
+                  attributes: ['id', 'levels', 'status'],
                   where: {std_id: studentId},
                   required: false,
                 },
@@ -46,19 +46,35 @@ const fetchLessonsDrills = async (studentId) => {
     const formattedTopics = testTopics.map((topic) => ({
       id: topic.Topic?.id,
       title: topic.Topic?.title,
-      drills: Array.isArray(topic.Topic.Drills) ? topic.Topic.Drills.reduce((drillsAcc, drill) => {
-        drillsAcc[drill.title.replace(/\s+/g, '')] = {
-          id: drill.id,
-          title: drill.title,
-          video: drill.video || '',
-          status: drill.DrillStatuses.length
-            ? drill.DrillStatuses[0].status
-            : 'Blocked',
-          level: drill.DrillLevels.length ? drill.DrillLevels[0].levels : 0,
-        };
-        return drillsAcc;
-      }, {}) : {},
+      drills: Array.isArray(topic.Topic.Drills)
+        ? topic.Topic.Drills.reduce((drillsAcc, drill) => {
+          const drillStatus = drill.DrillStatuses.length > 0 ? drill.DrillStatuses[0].status : 'Blocked';
+
+          const inProgressLevel = drill.DrillLevels.find(
+            (level) => level.status === "inProgress"
+          );
+        
+          const currentLevel = drillStatus === "Completed" 
+            ? 6 
+            : inProgressLevel
+              ? inProgressLevel.levels
+              : 0; 
+
+            drillsAcc[drill.title.replace(/\s+/g, '')] = {
+              id: drill.id,
+              title: drill.title,
+              video: drill.video || '',
+              status: drill.DrillStatuses.length
+                ? drill.DrillStatuses[0].status
+                : 'Blocked',
+              level: currentLevel,
+            
+            };
+            return drillsAcc;
+          }, {})
+        : {},
     }));
+
 
     return { testTopics: formattedTopics };
 

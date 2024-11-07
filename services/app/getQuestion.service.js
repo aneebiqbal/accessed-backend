@@ -61,7 +61,8 @@ const getQuestionDetails = async (studentId, drill_id, currentLevel) => {
     startPoint: currentLevel,
     endPoint: currentLevel + 1,
     score:  score < 0 ? 0 : score,
-    wrongAttempts
+    wrongAttempts,
+    questionsPool: drill.Questions
   };
 };
 

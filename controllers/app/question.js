@@ -32,7 +32,10 @@ const getQuestion = async (req, res) => {
         endPoint,
         score,
         wrongAttempts,
+        questionsPool
       } = await getQuestionDetails(studentId, drill_id, currentLevel);
+
+      const finalEndPoint = endPoint > 6 ? null : endPoint;
 
       if (unattemptedQuestion) {
         return res.json({
@@ -43,7 +46,7 @@ const getQuestion = async (req, res) => {
           image: unattemptedQuestion.image || "",
           options: unattemptedQuestion.options,
           startPoint,
-          endPoint,
+          endPoint: finalEndPoint,
           score,
           isTimed: isTimed,
           time: timeLimit,
@@ -61,14 +64,33 @@ const getQuestion = async (req, res) => {
           image: nextIncorrectQuestion.image || "",
           options: nextIncorrectQuestion.options,
           startPoint,
-          endPoint,
+          endPoint: finalEndPoint,
           score,
           isTimed: isTimed,
           time: timeLimit,
           wrong_attempts: wrongAttempts,
         });
       }
+      if (allQuestionsAttempted && incorrectQuestions.length === 0 && !unattemptedQuestion) {
+        const randomQuestion = getRandomQuestion(questionsPool);
+        return res.json({
+          id: randomQuestion.id,
+          question_type: randomQuestion.questionType,
+          passage: randomQuestion.passage || "",
+          statement: randomQuestion.statement,
+          image: randomQuestion.image || "",
+          options: randomQuestion.options,
+          startPoint,
+          endPoint: finalEndPoint,
+          score,
+          isTimed,
+          time: timeLimit,
+          wrong_attempts: wrongAttempts,
+        });
+      }
     });
+
+    
   } catch (error) {
     console.error("Error fetching Question:", error);
     return res.status(500).json({ error: "Failed to fetch Question" });
@@ -282,36 +304,107 @@ const submitQuestion = async (req, res) => {
       else if (newScore === -40) wrongAttempts = 2;
       else if (newScore === -60) wrongAttempts = 3;
 
-      const { allQuestionsAttempted, incorrectQuestions, unattemptedQuestion, startPoint, endPoint } =
+      const { allQuestionsAttempted, incorrectQuestions, unattemptedQuestion, startPoint, endPoint, questionsPool } =
         await getQuestionDetails(studentId, drill_id, currentLevel=drillLevel.levels);
 
+        const finalEndPoint = endPoint > 6 ? null : endPoint;
 
-      if (unattemptedQuestion) {
-        return res.json({
-            nextQuestion: promoted || demoted ? {} : {
-                id: unattemptedQuestion?.id || null,
-                question_type: unattemptedQuestion?.questionType || "",
-                passage: unattemptedQuestion?.passage || "",
-                statement: unattemptedQuestion?.statement || "",
-                image: unattemptedQuestion?.image || "",
-                options: unattemptedQuestion?.options || [],
-                score: newScore <= 0 ? 0 : newScore,
-                isTimed: drillLevel?.isTime || false,
-                startPoint,
-                endPoint,
-                time: drillLevel?.time || "",
-                wrong_attempts: wrongAttempts,
-              },
+        
+        if (unattemptedQuestion) {
+          return res.json({
+            nextQuestion: promoted || demoted ? {
+              startPoint,
+              endPoint: finalEndPoint,
+              wrong_attempts: wrongAttempts,
+              score: newScore <= 0 ? 0 : newScore
+            } : {
+              id: unattemptedQuestion?.id || null,
+              question_type: unattemptedQuestion?.questionType || "",
+              passage: unattemptedQuestion?.passage || "",
+              statement: unattemptedQuestion?.statement || "",
+              image: unattemptedQuestion?.image || "",
+              options: unattemptedQuestion?.options || [],
+              score: newScore <= 0 ? 0 : newScore,
+              isTimed: drillLevel?.isTime || false,
+              startPoint,
+              endPoint: finalEndPoint,
+              time: drillLevel?.time || "",
+              wrong_attempts: wrongAttempts,
+            },
             promoted,
             demoted,
             Answer: question.correct_answer,
-        });
-      }
+          });
+        }
+  
+        if (allQuestionsAttempted && incorrectQuestions.length === 0 ) {
+          const randomQuestion = getRandomQuestion(questionsPool);
+          return res.json({
+            nextQuestion: promoted || demoted ? {
+              startPoint,
+              endPoint: finalEndPoint,
+              wrong_attempts: wrongAttempts,
+              score: newScore <= 0 ? 0 : newScore
+            } : {
+              id: randomQuestion.id,
+              question_type: randomQuestion.questionType,
+              passage: randomQuestion.passage || "",
+              statement: randomQuestion.statement,
+              image: randomQuestion.image || "",
+              options: randomQuestion.options,
+              startPoint,
+              endPoint: finalEndPoint,
+              score: newScore <= 0 ? 0 : newScore,
+              isTimed: drillLevel?.isTime || false,
+              time: drillLevel?.time || "",
+              wrong_attempts: wrongAttempts,
+            },
+            promoted,
+            demoted,
+            Answer: question.correct_answer,
+          });
+        }
+        
+        if (incorrectQuestions.length > 0) {
+          const randomIndex = Math.floor(Math.random() * incorrectQuestions.length);
+          const incorrectQuestion = incorrectQuestions[randomIndex];
+          
+          return res.json({
+            nextQuestion: promoted || demoted ? {
+              startPoint,
+              endPoint: finalEndPoint,
+              wrong_attempts: wrongAttempts,
+              score: newScore <= 0 ? 0 : newScore
+            } : {
+              id: incorrectQuestion.id,
+              question_type: incorrectQuestion.questionType,
+              passage: incorrectQuestion.passage || "",
+              statement: incorrectQuestion.statement || "",
+              image: incorrectQuestion.image || "",
+              options: incorrectQuestion.options || [],
+              score: newScore <= 0 ? 0 : newScore,
+              isTimed: drillLevel?.isTime || false,
+              startPoint,
+              endPoint: finalEndPoint,
+              time: drillLevel?.time || "",
+              wrong_attempts: wrongAttempts,
+            },
+            promoted,
+            demoted,
+            Answer: incorrectQuestion.correct_answer,
+          });
+        }
+
     });
   } catch (error) {
     console.error("Error submitting Question:", error);
     return res.status(500).json({ error: "Failed to submit Question" });
   }
+};
+
+const getRandomQuestion = (questionsPool) => {
+  const randomIndex = Math.floor(Math.random() * questionsPool.length);
+  return questionsPool[randomIndex];
 };
 
 module.exports = { getQuestion, submitQuestion };
