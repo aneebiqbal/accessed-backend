@@ -95,27 +95,34 @@ const getDrillById = async (req, res) => {
 
       levels.sort((a, b) => a.level - b.level);
 
-      let startPoint = null;
-      let endPoint = null;
-      let foundInProgress = false;
+      const allLevelsCompleted = drill.DrillLevels.every((level) => level.status === "Completed");
 
-      levels.forEach((level) => {
-        if (level.status === "inProgress" && startPoint === null) {
-          startPoint = level.level;
-          foundInProgress = true;
-        }
+      let startPoint;
+      let endPoint;
+      let score;
 
-        if (
-          foundInProgress &&
-          level.status === "Blocked" &&
-          endPoint === null
-        ) {
-          endPoint = level.level;
-        }
-      });
-
-      if (startPoint === totalLevels - 1) {
+      if (allLevelsCompleted) {
+        startPoint = 6;
         endPoint = null;
+        score = 100;
+      } else {
+        let foundInProgress = false;
+        score = 0;
+
+        levels.forEach((level) => {
+          if (level.status === "inProgress" && !foundInProgress) {
+            startPoint = level.level;
+            foundInProgress = true;
+          }
+          if (foundInProgress && level.status === "Blocked" && endPoint == null) {
+            endPoint = level.level;
+          }
+        });
+
+        const inProgressLevel = drill.DrillLevels.find(
+          (level) => level.status === "inProgress"
+        );
+        score = inProgressLevel ? inProgressLevel.score || 0 : score;
       }
 
       const response = {
@@ -123,10 +130,7 @@ const getDrillById = async (req, res) => {
         title: drill.title,
         video: drill.video || "",
         drills: levels,
-        score: drill.DrillLevels.reduce(
-          (acc, level) => acc + (level.score || 0),
-          0
-        ),
+        score,
         startPoint,
         endPoint,
       };
@@ -138,6 +142,7 @@ const getDrillById = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch drill by id" });
   }
 };
+
 
 const checkDrillVideoStatus = async (req, res) => {
   try {
