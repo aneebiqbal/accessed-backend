@@ -252,262 +252,222 @@ INSERT INTO
         "updatedAt"
     )
 VALUES
-(
-        'Physics',
+     (
+            'Maths',
+            'https://example.com/video1.mp4',
+            ARRAY [] :: INTEGER [],
+            7,
+            NOW(),
+            NOW()
+        ),
+         (
+            'Computer',
+            'https://example.com/video1.mp4',
+            ARRAY [] :: INTEGER [],
+            9,
+            NOW(),
+            NOW()
+        ),
+         (
+            'Intellegence',
+            'https://example.com/video1.mp4',
+            ARRAY [] :: INTEGER [],
+            10,
+            NOW(),
+            NOW()
+        ),
+     (
+            'biology',
+            'https://example.com/video1.mp4',
+            ARRAY [] :: INTEGER [],
+            6,
+            NOW(),
+            NOW()
+        ),
+     (
+            'Chemistry',
+            'https://example.com/video1.mp4',
+            ARRAY [] :: INTEGER [],
+            5,
+            NOW(),
+            NOW()
+        ),
+     (
+            'Physics',
+            'https://example.com/video1.mp4',
+            ARRAY [] :: INTEGER [],
+            4,
+            NOW(),
+            NOW()
+        ),
+    (
+        'Statement Based',
         'https://example.com/video1.mp4',
         ARRAY [] :: INTEGER [],
-        8,
+        3,
         NOW(),
         NOW()
     ),
     (
-        'Chemistry',
+        'Scenario Based',
         'https://example.com/video1.mp4',
         ARRAY [] :: INTEGER [],
-        8,
+        3,
         NOW(),
         NOW()
     ),
     (
-        'Biology',
+        'Whole Numbers',
         'https://example.com/video1.mp4',
         ARRAY [] :: INTEGER [],
-        8,
+        2,
         NOW(),
         NOW()
     ),
     (
-        'Maths',
+        'Decimal',
         'https://example.com/video1.mp4',
         ARRAY [] :: INTEGER [],
-        8,
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'PEMDS',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Fractions',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Square Root',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Percentage',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Proportions',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Problem Solving',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Ratios',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Combined Rates',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Algebra',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Geomatery',
+        'https://example.com/video1.mp4',
+        ARRAY [] :: INTEGER [],
+        2,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Grammer',
+        'https://example.com/video1.mp4',
+        ARRAY[]::INTEGER[],
+        1,
         NOW(),
         NOW()
     ),
      (
-        'Computer',
+        'Synonyms',
         'https://example.com/video1.mp4',
-        ARRAY [] :: INTEGER [],
-        8,
+        ARRAY[]::INTEGER[],
+        1,
         NOW(),
         NOW()
     ),
-    --  (
-    --         'Maths',
-    --         'https://example.com/video1.mp4',
-    --         ARRAY [] :: INTEGER [],
-    --         7,
-    --         NOW(),
-    --         NOW()
-    --     ),
-    --      (
-    --         'Computer',
-    --         'https://example.com/video1.mp4',
-    --         ARRAY [] :: INTEGER [],
-    --         9,
-    --         NOW(),
-    --         NOW()
-    --     ),
-    --      (
-    --         'Intellegence',
-    --         'https://example.com/video1.mp4',
-    --         ARRAY [] :: INTEGER [],
-    --         10,
-    --         NOW(),
-    --         NOW()
-    --     )
-    --  (
-    --         'biology',
-    --         'https://example.com/video1.mp4',
-    --         ARRAY [] :: INTEGER [],
-    --         6,
-    --         NOW(),
-    --         NOW()
-    --     ),
-    --  (
-    --         'Chemistry',
-    --         'https://example.com/video1.mp4',
-    --         ARRAY [] :: INTEGER [],
-    --         5,
-    --         NOW(),
-    --         NOW()
-    --     ),
-    --  (
-    --         'Physics',
-    --         'https://example.com/video1.mp4',
-    --         ARRAY [] :: INTEGER [],
-    --         4,
-    --         NOW(),
-    --         NOW()
-    --     ),
-    -- (
-    --     'Statement Based',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     3,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Scenario Based',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     3,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Whole Numbers',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Decimal',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'PEMDS',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Fractions',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Square Root',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Percentage',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Proportions',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Problem Solving',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Ratios',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Combined Rates',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Algebra',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Geomatery',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY [] :: INTEGER [],
-    --     2,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Grammer',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY[]::INTEGER[],
-    --     1,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    --  (
-    --     'Synonyms',
-    --     'https://example.com/video1.mp4',
-    --     ARRAY[]::INTEGER[],
-    --     1,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Antonyms',
-    --     'https://example.com/video2.mp4',
-    --     ARRAY[]::INTEGER[],
-    --     1,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    --  (
-    --     'Sentence Correction',
-    --     'https://example.com/video2.mp4',
-    --     ARRAY[]::INTEGER[],
-    --     1,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    --  (
-    --     'Sentence Completion',
-    --     'https://example.com/video2.mp4',
-    --     ARRAY[]::INTEGER[],
-    --     1,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    -- (
-    --     'Analogies',
-    --     'https://example.com/video3.mp4',
-    --     ARRAY[]::INTEGER[],
-    --     1,
-    --     NOW(),
-    --     NOW()
-    -- ),
-    --  (
-    --     'Comprehension',
-    --     'https://example.com/video3.mp4',
-    --     ARRAY[]::INTEGER[],
-    --     1,
-    --     NOW(),
-    --     NOW()
-    -- );
+    (
+        'Antonyms',
+        'https://example.com/video2.mp4',
+        ARRAY[]::INTEGER[],
+        1,
+        NOW(),
+        NOW()
+    ),
+     (
+        'Sentence Correction',
+        'https://example.com/video2.mp4',
+        ARRAY[]::INTEGER[],
+        1,
+        NOW(),
+        NOW()
+    ),
+     (
+        'Sentence Completion',
+        'https://example.com/video2.mp4',
+        ARRAY[]::INTEGER[],
+        1,
+        NOW(),
+        NOW()
+    ),
+    (
+        'Analogies',
+        'https://example.com/video3.mp4',
+        ARRAY[]::INTEGER[],
+        1,
+        NOW(),
+        NOW()
+    ),
+     (
+        'Comprehension',
+        'https://example.com/video3.mp4',
+        ARRAY[]::INTEGER[],
+        1,
+        NOW(),
+        NOW()
+    );
     -- Insert dummy data into Questions table
 
 -- Insert dummy data into Questions table
@@ -594,6 +554,16 @@ VALUES
     ('MCQs', NULL, 'Take your application to the—------------- you think can help you.', NULL, 
     '{"A": "Person whom", "B": "Person", "C": "Person who", "D": "Person which"}'::JSON, 
     'C', 1, NOW(), NOW());
+
+
+
+
+
+
+
+
+
+
 
 
 -- Insert dummy data into DrillStatus table

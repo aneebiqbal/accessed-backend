@@ -31,6 +31,7 @@ const fetchLaunchpadData = async (userId) => {
           include: [
             {
               model: db.DrillLevel,
+              where: {std_id: userId},
               attributes: ['score'],
             },
           ],

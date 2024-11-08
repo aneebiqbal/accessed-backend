@@ -129,20 +129,22 @@ const submitQuestion = async (req, res) => {
       const isDrillCompleted = drillStatus && drillStatus.status === "Completed";
 
       if (isDrillCompleted) {
-        const { unattemptedQuestion } = await getQuestionDetails(studentId, drill_id);
+        const { questionsPool } = await getQuestionDetails(studentId, drill_id);
 
-        if (unattemptedQuestion) {
+        if (questionsPool) {
           return res.json({
             nextQuestion: {
-              id: unattemptedQuestion.id,
-              question_type: unattemptedQuestion.questionType,
-              passage: unattemptedQuestion.passage || "",
-              statement: unattemptedQuestion.statement,
-              image: unattemptedQuestion.image || "",
-              options: unattemptedQuestion.options,
-              score: 100
+              id: questionsPool.id,
+              question_type: questionsPool.questionType,
+              passage: questionsPool.passage || "",
+              statement: questionsPool.statement,
+              image: questionsPool.image || "",
+              options: questionsPool.options,
+              score: 100,
+              startPoint: 6,
+              endPoint: null
             },
-            Answer: unattemptedQuestion.correct_answer,
+            Answer: question.correct_answer,
           });
         }
       }
@@ -391,7 +393,7 @@ const submitQuestion = async (req, res) => {
             },
             promoted,
             demoted,
-            Answer: incorrectQuestion.correct_answer,
+            Answer: question.correct_answer,
           });
         }
 
