@@ -3,41 +3,69 @@ const db = require('../../db/db');
 const getQuestionDetails = async (studentId, drill_id, currentLevel) => {
   const [student, drillLevel, drill] = await Promise.all([
     db.Student.findByPk(studentId),
-    db.DrillLevel.findOne({
-      where: { drill_id, std_id: studentId, levels: currentLevel },
-      attributes: ['isTime', 'time', 'score', 'levels']
-    }),
+    currentLevel !== undefined && currentLevel !== null
+      ? db.DrillLevel.findOne({
+          where: { drill_id, std_id: studentId, levels: currentLevel },
+          attributes: ['isTime', 'time', 'score', 'levels']
+        })
+      : null,
     db.Drill.findByPk(drill_id, {
-      include: [{
-        model: db.Question,
-        required: true,
-        attributes: [
-          'id', 
-          'questionType', 
-          'passage', 
-          'statement', 
-          'image', 
-          'options', 
-          'correct_answer'
-        ],
-        include: [{
-          model: db.QuestionStatus,
-          attributes: ['attempted_answer'],
-          where: { student_id: studentId },
-          required: false
-        }]
-      }]
-    })
+      include: [
+        {
+          model: db.Question,
+          required: true,
+          attributes: [
+            'id',
+            'questionType',
+            'passage',
+            'statement',
+            'image',
+            'options',
+            'correct_answer',
+          ],
+          include: [
+            {
+              model: db.QuestionStatus,
+              attributes: ['attempted_answer'],
+              where: { student_id: studentId },
+              required: false
+            },
+          ],
+        },
+      ],
+    }),
   ]);
 
   if (!student || !drill) {
     throw new Error('Required data not found');
   }
 
+  if (currentLevel === undefined || currentLevel === null) {
+    const randomQuestion = drill.Questions[
+      Math.floor(Math.random() * drill.Questions.length)
+    ];
+
+    const correctAnswer = randomQuestion.correct_answer;
+
+    return {
+      allQuestionsAttempted: false,
+      incorrectQuestions: [],
+      unattemptedQuestion: null,
+      isTimed: false,
+      timeLimit: '',
+      startPoint: 6,
+      endPoint: null,
+      score: 100,
+      wrongAttempts: 0,
+      questionsPool: randomQuestion,
+      correctAnswer
+    };
+  }
+
   const incorrectQuestions = [];
-  const unattemptedQuestion = drill.Questions.find(question => {
+  const unattemptedQuestion = drill.Questions.find((question) => {
     const studentAttempt = question.QuestionStatuses[0];
-    const isCorrect = studentAttempt && 
+    const isCorrect = studentAttempt &&
       studentAttempt.attempted_answer === question.correct_answer;
 
     if (studentAttempt && !isCorrect) {

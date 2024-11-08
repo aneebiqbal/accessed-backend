@@ -55,6 +55,9 @@ const getDrillById = async (req, res) => {
       if (!drill) {
         return res.status(404).json({ error: "Drill not found" });
       }
+      if (!drill.DrillStatuses || drill.DrillStatuses.length === 0) {
+        return res.status(403).json({ locked: true });
+      }
 
       let levelZero = drill.DrillLevels.find((level) => level.levels === 0);
       if (!levelZero) {
