@@ -11,6 +11,9 @@ const getQuestion = async (req, res) => {
       const studentId = req.user.id;
       const drill_id = req.params.id;
 
+      if (isNaN(drill_id)) {
+        return res.status(404).json({"error":"In-progress level not found" });
+      }
       const inProgressLevel = await db.DrillLevel.findOne({
         where: { drill_id, std_id: studentId },
         attributes: ['levels'],
@@ -101,8 +104,12 @@ const submitQuestion = async (req, res) => {
   try {
     await authMiddleware(req, res, async () => {
       const studentId = req.user.id;
-    const { drill_id, questionId, answer } = req.body;
+      const { drill_id, questionId, answer } = req.body;
 
+      if (isNaN(drill_id)) {
+        return res.status(404).json({"error":"In-progress level not found" });
+      }
+      
       const [student, drillLevel, question] = await Promise.all([
         db.Student.findByPk(studentId),
         db.DrillLevel.findOne({

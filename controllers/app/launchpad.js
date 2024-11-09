@@ -18,6 +18,7 @@ const getLaunchpadData = async (req, res) => {
         topics: topics.map((topic) => ({
           title: topic.title,
           description: topic.description,
+          status: topic.status,
         })),
         graphData: graphData.map((topicData) => ({
           subject: topicData.title,
