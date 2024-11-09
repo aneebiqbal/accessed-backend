@@ -301,6 +301,11 @@ const submitQuestion = async (req, res) => {
         }
       }
 
+      let wrongAttempts = 0;
+      if (newScore === -20) wrongAttempts = 1;
+      else if (newScore === -40) wrongAttempts = 2;
+      else if (newScore === -60) wrongAttempts = 3;
+
       if (!promoted && !demoted) {
         await db.DrillLevel.update(
           { score: newScore },
@@ -308,17 +313,27 @@ const submitQuestion = async (req, res) => {
         );
       }
 
-      let wrongAttempts = 0;
-      if (newScore === -20) wrongAttempts = 1;
-      else if (newScore === -40) wrongAttempts = 2;
-      else if (newScore === -60) wrongAttempts = 3;
+      if (drillLevel.score === -40 && isAnswerCorrect) {
+        await db.DrillLevel.update(
+          { score: 0 },
+          {
+            where: {
+              drill_id,
+              std_id: studentId,
+              levels: drillLevel.levels,
+              status: "inProgress",
+            },
+          }
+        );
+        newScore = 0; 
+        wrongAttempts = 0;
+      }
 
       const { allQuestionsAttempted, incorrectQuestions, unattemptedQuestion, startPoint, endPoint, questionsPool } =
         await getQuestionDetails(studentId, drill_id, currentLevel=drillLevel.levels);
 
         const finalEndPoint = endPoint > 6 ? null : endPoint;
-
-        
+  
         if (unattemptedQuestion) {
           return res.json({
             nextQuestion: promoted || demoted ? {

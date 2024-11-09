@@ -27,25 +27,30 @@ const fetchLaunchpadData = async (userId) => {
         if (!topic.id) {
           throw new Error(`Topic ID is undefined for topic: ${topic.title}`);
         }
-
+    
         const allDrills = await db.Drill.findAll({
           where: { topic_id: topic?.id },
           attributes: ['title', 'id'],
         });
-
+    
         const drillLevels = await db.DrillLevel.findAll({
           where: { std_id: userId },
           attributes: ['score', 'drill_id'],
         });
-
+    
         const drillScoreMap = new Map(
           drillLevels.map((level) => [level.drill_id, level.score])
         );
-
-        const allDrillsCompleted = allDrills.every((drill) => drillScoreMap.get(drill.id) > 0);
-
-        const topicStatus = allDrillsCompleted ? 'completed' : 'inprogress';
-
+    
+        const allDrillsCompleted = allDrills.every((drill) => {
+          const score = drillScoreMap.get(drill.id);
+          return score !== undefined && score === 100;
+        });
+    
+        const topicStatus = allDrills.length === 1
+          ? (drillScoreMap.get(allDrills[0].id) === 100 ? 'completed' : 'inprogress')
+          : (allDrillsCompleted ? 'completed' : 'inprogress');
+    
         return {
           id: topic.id,
           title: topic.title,
@@ -54,32 +59,41 @@ const fetchLaunchpadData = async (userId) => {
         };
       })
     );
+    
 
     const graphData = await Promise.all(
       topics.map(async (topic) => {
         const allDrills = await db.Drill.findAll({
-          where: { topic_id: topic?.id },
+          where: { topic_id: topic.id },
           attributes: ['title', 'id'],
         });
-
+    
         const drillLevels = await db.DrillLevel.findAll({
           where: { std_id: userId },
-          attributes: ['score', 'drill_id'],
+          attributes: ['score', 'drill_id', 'levels'],
         });
-
-        const drillScoreMap = new Map(
-          drillLevels.map((level) => [level.drill_id, level.score])
-        );
-
-        const drillData = allDrills.map((drill) => ({
-          title: drill.title,
-          score: drillScoreMap.get(drill.id) || 0,
-        }));
-
+    
+        const drillScoreMap = new Map();
+    
+        drillLevels.forEach((level) => {
+          const currentScore = drillScoreMap.get(level.drill_id) || 0;
+          drillScoreMap.set(level.drill_id, currentScore + level.score);
+        });
+    
+        const drillData = allDrills.map((drill) => {
+          const totalScore = drillScoreMap.get(drill.id) || 0;
+          const drillScorePercentage = (totalScore / 600) * 100;
+          return {
+            title: drill.title,
+            score: parseFloat(drillScorePercentage.toFixed(2)),
+            total: 100
+          };
+        });
+    
         const totalScore = drillData.length
           ? drillData.reduce((topicScore, drill) => topicScore + drill.score, 0) / drillData.length
           : 0;
-
+    
         return {
           title: topic.title,
           totalScore: parseFloat(totalScore.toFixed(2)),
@@ -87,6 +101,7 @@ const fetchLaunchpadData = async (userId) => {
         };
       })
     );
+    
 
     return { testInfo, topics, graphData };
   } catch (error) {
