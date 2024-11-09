@@ -6,7 +6,6 @@ exports.resetPassword = async (req, res) => {
     const { token } = req.query;
 
     if (!newPassword) {
-      console.log("222222222222222222newpassword",newPassword);
       return { status: 404, message: "new password is required" };
     }
 

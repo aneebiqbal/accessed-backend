@@ -1,11 +1,10 @@
 const db = require("../../db/db");
 
-
 const fetchLaunchpadData = async (userId) => {
   try {
     const student = await db.Student.findOne({
       where: { id: userId },
-      attributes: ['test_id'], 
+      attributes: ['test_id'],
     });
 
     if (!student) {
@@ -16,40 +15,66 @@ const fetchLaunchpadData = async (userId) => {
       where: { id: student.test_id },
     });
 
-    const topics = await db.Topic.findAll({
-      include: [{
-        model: db.TestTopic,
-        where: { test_id: testInfo.id },
-      }],
-      attributes: ['title', 'description', 'id'],
-    });
+    const topics = await Promise.all(
+      (await db.Topic.findAll({
+        include: [{
+          model: db.TestTopic,
+          where: { test_id: testInfo.id },
+        }],
+        attributes: ['title', 'description', 'id'],
+      })).map(async (topic) => {
+        
+        if (!topic.id) {
+          throw new Error(`Topic ID is undefined for topic: ${topic.title}`);
+        }
+
+        const allDrills = await db.Drill.findAll({
+          where: { topic_id: topic?.id },
+          attributes: ['title', 'id'],
+        });
+
+        const drillLevels = await db.DrillLevel.findAll({
+          where: { std_id: userId },
+          attributes: ['score', 'drill_id'],
+        });
+
+        const drillScoreMap = new Map(
+          drillLevels.map((level) => [level.drill_id, level.score])
+        );
+
+        const allDrillsCompleted = allDrills.every((drill) => drillScoreMap.get(drill.id) > 0);
+
+        const topicStatus = allDrillsCompleted ? 'completed' : 'inprogress';
+
+        return {
+          id: topic.id,
+          title: topic.title,
+          description: topic.description,
+          status: topicStatus,
+        };
+      })
+    );
 
     const graphData = await Promise.all(
       topics.map(async (topic) => {
-        const drills = await db.Drill.findAll({
-          where: { topic_id: topic.id },
-          include: [
-            {
-              model: db.DrillLevel,
-              where: {std_id: userId},
-              attributes: ['score'],
-            },
-          ],
+        const allDrills = await db.Drill.findAll({
+          where: { topic_id: topic?.id },
+          attributes: ['title', 'id'],
         });
 
-        const drillData = drills.map((drill) => {
-          const totalScoreForDrill = drill.DrillLevels.reduce(
-            (totalScore, level) => totalScore + level.score,
-            0
-          );
-
-          const score = (totalScoreForDrill / 600) * 100;
-
-          return {
-            title: drill.title,
-            score: parseFloat(score.toFixed(2)), 
-          };
+        const drillLevels = await db.DrillLevel.findAll({
+          where: { std_id: userId },
+          attributes: ['score', 'drill_id'],
         });
+
+        const drillScoreMap = new Map(
+          drillLevels.map((level) => [level.drill_id, level.score])
+        );
+
+        const drillData = allDrills.map((drill) => ({
+          title: drill.title,
+          score: drillScoreMap.get(drill.id) || 0,
+        }));
 
         const totalScore = drillData.length
           ? drillData.reduce((topicScore, drill) => topicScore + drill.score, 0) / drillData.length
@@ -64,7 +89,6 @@ const fetchLaunchpadData = async (userId) => {
     );
 
     return { testInfo, topics, graphData };
-
   } catch (error) {
     console.error('Error in fetching launchpad data:', error);
     throw new Error('Failed to fetch launchpad data');
@@ -72,4 +96,3 @@ const fetchLaunchpadData = async (userId) => {
 };
 
 module.exports = { fetchLaunchpadData };
-

@@ -36,6 +36,10 @@ const getDrillById = async (req, res) => {
         return res.status(404).json({ error: "Student not found" });
       }
 
+      if (isNaN(drill_id)) {
+        return res.status(404).json({ error: "Drill not found" });
+      }
+
       const drill = await db.Drill.findOne({
         where: { id: drill_id },
         include: [
