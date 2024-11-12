@@ -104,7 +104,7 @@ const submitQuestion = async (req, res) => {
   try {
     await authMiddleware(req, res, async () => {
       const studentId = req.user.id;
-      const { drill_id, questionId, answer } = req.body;
+      const { drill_id, questionId, answer, timeOut } = req.body;
 
       if (isNaN(drill_id)) {
         return res.status(404).json({"error":"In-progress level not found" });
@@ -159,10 +159,13 @@ const submitQuestion = async (req, res) => {
         return res.status(404).json({ error: "Required data not found" });
       }
 
-      const isAnswerCorrect = answer === question.correct_answer;
+      const isAnswerCorrect = timeOut ? false : answer === question.correct_answer;
+      const attemptedAnswer = timeOut ? 'z' : answer;
       let newScore = drillLevel ? drillLevel.score : 0;
 
-      if (drillLevel && drillLevel.levels !== 0 && drillLevel.status === "inProgress") {
+      if (timeOut) {
+        newScore = Math.max(-60, drillLevel.score - 20);
+      } else if (drillLevel && drillLevel.levels !== 0 && drillLevel.status === "inProgress") {
         newScore = Math.min(
           100,
           Math.max(-60, drillLevel.score + (isAnswerCorrect ? 20 : -20))
@@ -174,12 +177,12 @@ const submitQuestion = async (req, res) => {
         where: { question_id: questionId, student_id: studentId },
       });
       if (existingQuestionStatus) {
-        await existingQuestionStatus.update({ attempted_answer: answer });
+        await existingQuestionStatus.update({ attempted_answer: attemptedAnswer });
       } else {
         await db.QuestionStatus.create({
           question_id: questionId,
           student_id: studentId,
-          attempted_answer: answer,
+          attempted_answer: attemptedAnswer,
         });
       }
 
@@ -217,6 +220,9 @@ const submitQuestion = async (req, res) => {
             levels: drillLevel.levels + 1,
             status: "inProgress",
             score: 0,
+            isTime: drillLevel.levels + 1 >= 5,
+            time: drillLevel.levels + 1 >= 5 ? 120 : null,
+
           });
         } if (drillLevel.levels === 6) {
             await db.DrillStatus.update(
