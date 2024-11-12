@@ -152,6 +152,7 @@ const submitQuestion = async (req, res) => {
               endPoint: null
             },
             Answer: question.correct_answer,
+            isCompleted: true
           });
         }
       }
@@ -335,6 +336,8 @@ const submitQuestion = async (req, res) => {
         wrongAttempts = 0;
       }
 
+      const isCompleted = drillLevel.levels == 6 && drillLevel.status === 'inProgress' && newScore === 100 ? true : false
+
       const { allQuestionsAttempted, incorrectQuestions, unattemptedQuestion, startPoint, endPoint, questionsPool } =
         await getQuestionDetails(studentId, drill_id, currentLevel=drillLevel.levels);
 
@@ -364,6 +367,7 @@ const submitQuestion = async (req, res) => {
             promoted,
             demoted,
             Answer: question.correct_answer,
+            isCompleted
           });
         }
   
@@ -374,7 +378,8 @@ const submitQuestion = async (req, res) => {
               startPoint,
               endPoint: finalEndPoint,
               wrong_attempts: wrongAttempts,
-              score: newScore <= 0 ? 0 : newScore
+              score: newScore <= 0 ? 0 : newScore,
+              isCompleted
             } : {
               id: randomQuestion.id,
               question_type: randomQuestion.questionType,
@@ -392,6 +397,7 @@ const submitQuestion = async (req, res) => {
             promoted,
             demoted,
             Answer: question.correct_answer,
+            isCompleted
           });
         }
         
@@ -404,7 +410,8 @@ const submitQuestion = async (req, res) => {
               startPoint,
               endPoint: finalEndPoint,
               wrong_attempts: wrongAttempts,
-              score: newScore <= 0 ? 0 : newScore
+              score: newScore <= 0 ? 0 : newScore,
+              isCompleted
             } : {
               id: incorrectQuestion.id,
               question_type: incorrectQuestion.questionType,
@@ -422,6 +429,7 @@ const submitQuestion = async (req, res) => {
             promoted,
             demoted,
             Answer: question.correct_answer,
+            isCompleted
           });
         }
 
