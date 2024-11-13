@@ -136,26 +136,37 @@ const submitQuestion = async (req, res) => {
       const isDrillCompleted = drillStatus && drillStatus.status === "Completed";
 
       if (isDrillCompleted) {
-        const { questionsPool } = await getQuestionDetails(studentId, drill_id);
+        const {
+          allQuestionsAttempted,
+          isTimed,
+          timeLimit,
+          startPoint,
+          score,
+          questionsPool
+        } = await getQuestionDetails(studentId, drill_id, currentLevel = 6);  
 
-        if (questionsPool) {
+        if (isDrillCompleted && allQuestionsAttempted) {
+          const randomQuestion = getRandomQuestion(questionsPool);
           return res.json({
             nextQuestion: {
-              id: questionsPool.id,
-              question_type: questionsPool.questionType,
-              passage: questionsPool.passage || "",
-              statement: questionsPool.statement,
-              image: questionsPool.image || "",
-              options: questionsPool.options,
-              score: 100,
-              startPoint: 6,
-              endPoint: null
+              id: randomQuestion.id,
+              question_type: randomQuestion.questionType,
+              passage: randomQuestion.passage || "",
+              statement: randomQuestion.statement,
+              image: randomQuestion.image || "",
+              options: randomQuestion.options,
+              isTimed,
+              time: timeLimit,
+              score: score,
+              startPoint: startPoint,
+              endPoint: null,
             },
             Answer: question.correct_answer,
-            isCompleted: true
+            isCompleted: true,
           });
         }
       }
+      
       if (!student || !question) {
         return res.status(404).json({ error: "Required data not found" });
       }
@@ -369,8 +380,8 @@ const submitQuestion = async (req, res) => {
             Answer: question.correct_answer,
             isCompleted
           });
-        }
-  
+        }   
+
         if (allQuestionsAttempted && incorrectQuestions.length === 0 ) {
           const randomQuestion = getRandomQuestion(questionsPool);
           return res.json({
@@ -400,7 +411,7 @@ const submitQuestion = async (req, res) => {
             isCompleted
           });
         }
-        
+           
         if (incorrectQuestions.length > 0) {
           const randomIndex = Math.floor(Math.random() * incorrectQuestions.length);
           const incorrectQuestion = incorrectQuestions[randomIndex];
@@ -421,9 +432,9 @@ const submitQuestion = async (req, res) => {
               options: incorrectQuestion.options || [],
               score: newScore <= 0 ? 0 : newScore,
               isTimed: drillLevel?.isTime || false,
+              time: drillLevel?.time || "",
               startPoint,
               endPoint: finalEndPoint,
-              time: drillLevel?.time || "",
               wrong_attempts: wrongAttempts,
             },
             promoted,

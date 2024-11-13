@@ -65,8 +65,8 @@ const getQuestionDetails = async (studentId, drill_id, currentLevel) => {
   const incorrectQuestions = [];
   const unattemptedQuestion = drill.Questions.find((question) => {
     const studentAttempt = question.QuestionStatuses[0];
-    const isCorrect = studentAttempt &&
-      studentAttempt.attempted_answer === question.correct_answer;
+    const isCorrect =
+      studentAttempt && studentAttempt.attempted_answer === question.correct_answer;
 
     if (studentAttempt && !isCorrect) {
       incorrectQuestions.push(question);
@@ -80,8 +80,22 @@ const getQuestionDetails = async (studentId, drill_id, currentLevel) => {
   if (score === -20) wrongAttempts = 1;
   else if (score === -40) wrongAttempts = 2;
 
+  const allQuestionsAttempted = !unattemptedQuestion;
+
+  const isDrillCompleted = allQuestionsAttempted && incorrectQuestions.length === 0;
+
+  let questionsPool = isDrillCompleted
+    ? drill.Questions.filter((question) => drillLevel?.isTime) 
+    : drill.Questions;
+
+  if (isDrillCompleted && questionsPool.length === 0) {
+    questionsPool = drill.Questions;
+  }
+
+
+
   return {
-    allQuestionsAttempted: !unattemptedQuestion,
+    allQuestionsAttempted,
     incorrectQuestions,
     unattemptedQuestion,
     isTimed: drillLevel?.isTime || false,
@@ -90,10 +104,9 @@ const getQuestionDetails = async (studentId, drill_id, currentLevel) => {
     endPoint: currentLevel + 1,
     score:  score < 0 ? 0 : score,
     wrongAttempts,
-    questionsPool: drill.Questions
+    questionsPool:  questionsPool ? questionsPool : drill.Questions,
   };
 };
-
 
 module.exports = {
     getQuestionDetails
