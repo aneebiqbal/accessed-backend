@@ -40,27 +40,27 @@ const getQuestionDetails = async (studentId, drill_id, currentLevel) => {
     throw new Error('Required data not found');
   }
 
-  if (currentLevel === undefined || currentLevel === null) {
-    const randomQuestion = drill.Questions[
-      Math.floor(Math.random() * drill.Questions.length)
-    ];
+  // if (currentLevel === undefined || currentLevel === null) {
+  //   const randomQuestion = drill.Questions[
+  //     Math.floor(Math.random() * drill.Questions.length)
+  //   ];
 
-    const correctAnswer = randomQuestion.correct_answer;
+  //   const correctAnswer = randomQuestion.correct_answer;
 
-    return {
-      allQuestionsAttempted: false,
-      incorrectQuestions: [],
-      unattemptedQuestion: null,
-      isTimed: false,
-      timeLimit: '',
-      startPoint: 6,
-      endPoint: null,
-      score: 100,
-      wrongAttempts: 0,
-      questionsPool: randomQuestion,
-      correctAnswer
-    };
-  }
+  //   return {
+  //     allQuestionsAttempted: true,
+  //     incorrectQuestions: [],
+  //     unattemptedQuestion: null,
+  //     isTimed: false,
+  //     timeLimit: '',
+  //     startPoint: 6,
+  //     endPoint: null,
+  //     score: 100,
+  //     wrongAttempts: 0,
+  //     questionsPool: randomQuestion,
+  //     correctAnswer
+  //   };
+  // }
 
   const incorrectQuestions = [];
   const unattemptedQuestion = drill.Questions.find((question) => {

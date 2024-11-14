@@ -82,16 +82,19 @@ const fetchLaunchpadData = async (userId) => {
     
         const drillData = allDrills.map((drill) => {
           const totalScore = drillScoreMap.get(drill.id) || 0;
-          const drillScorePercentage = (totalScore / 600) * 100;
+          const drillScorePercentage = Math.max((totalScore / 600) * 100, 0);
           return {
             title: drill.title,
             score: parseFloat(drillScorePercentage.toFixed(2)),
-            total: 100
+            total: 100,
           };
         });
     
         const totalScore = drillData.length
-          ? drillData.reduce((topicScore, drill) => topicScore + drill.score, 0) / drillData.length
+          ? Math.max(
+              drillData.reduce((topicScore, drill) => topicScore + drill.score, 0) / drillData.length,
+              0
+            )
           : 0;
     
         return {
@@ -101,6 +104,7 @@ const fetchLaunchpadData = async (userId) => {
         };
       })
     );
+    
     
 
     return { testInfo, topics, graphData };
